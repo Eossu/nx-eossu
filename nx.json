@@ -28,6 +28,12 @@
     "eossu-e2e": {
       "tags": [],
       "implicitDependencies": ["eossu"]
+    },
+    "styles": {
+      "tags": []
+    },
+    "flowchart": {
+      "tags": []
     }
   }
 }

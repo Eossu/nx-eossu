@@ -15,7 +15,10 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "@eossu/styles": ["libs/styles/src/index.ts"],
+      "@eossu/flowchart": ["libs/flowchart/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }
