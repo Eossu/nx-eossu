@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs'
+import { ConnectorType } from './flowchart.enums'
 
 
 const htmlPrefix = 'eossu-fc'
@@ -27,17 +28,13 @@ export const FlowchartConstants = {
 }
 
 
-export enum ConnectorType {
-    Left,
-    Right,
-    Top,
-    Bottom
+export interface ID {
+    id: string;
 }
 
 
-export enum LineStyle {
-    Curved,
-    Line
+export interface ISelection {
+    selected?: boolean;
 }
 
 
@@ -55,14 +52,12 @@ export interface IRectangle {
 }
 
 
-export interface IConnector {
-    id: string;
-    type: string;
+export interface IConnector extends ID, ISelection {
+    type: ConnectorType;
 }
 
 
-export interface INode extends ICordinates {
-    id: string;
+export interface IVertex extends ID, ICordinates, ISelection {
     name: string;
     connectors: Array<IConnector>;
     readonly?: boolean;
@@ -81,40 +76,40 @@ export interface INodeRectangleInfo {
 
 
 export interface IConnectorRectangleInfo {
-    type: string;
+    type: ConnectorType;
     width: number
     height: number;
     nodeRectagleInfo: INodeRectangleInfo;
 }
 
 
-export interface IEdge {
+export interface IEdge extends ISelection {
     lable?: string;
     source?: string;
     destination?: string;
     active?: boolean;
 }
 
-export interface IModel {
-    nodes: Array<INode>;
+export interface IWorkspaceModel {
+    nodes: Array<IVertex>;
     edges: Array<IEdge>;
 }
 
 
 export interface IUserNodeCallbacks {
-    nodeEdit?: (event: MouseEvent, node: INode) => void;
-    doubleClick?: (event: MouseEvent, node: INode) => void;
-    mouseDown?: (event: MouseEvent, node: INode) => void;
-    mouseEnter?: (event: MouseEvent, node: INode) => void;
-    mouseLeave?: (event: MouseEvent, node: INode) => void;
+    nodeEdit?: (event: MouseEvent, node: IVertex) => void;
+    doubleClick?: (event: MouseEvent, node: IVertex) => void;
+    mouseDown?: (event: MouseEvent, node: IVertex) => void;
+    mouseEnter?: (event: MouseEvent, node: IVertex) => void;
+    mouseLeave?: (event: MouseEvent, node: IVertex) => void;
 }
 
 
 export interface IUserCallbacks {
-    dropNode?: (event: Event, node: INode) => void;
+    dropNode?: (event: Event, node: IVertex) => void;
     createEdge?: (event: Event, edge: IEdge) => Observable<IEdge>;
     edgeAdded?: (edge: IEdge) => void;
-    nodeRemoved?: (node: INode) => void;
+    nodeRemoved?: (node: IVertex) => void;
     edgeRemoved?: (edge: IEdge) => void;
     edgeDoubleClick?: (event: MouseEvent, edge: IEdge) => void;
     edgeMouseOver?: (event: MouseEvent, edge: IEdge) => void;
@@ -125,7 +120,7 @@ export interface IUserCallbacks {
 
 
 export interface ICallbacks {
-    nodeDragstart: (event: Event, node: INode) => void;
+    nodeDragstart: (event: Event, node: IVertex) => void;
     nodeDragend: (event: Event) => void;
     edgeDragstart: (event: Event, connector: IConnector) => void;
     edgeDragend: (event: Event) => void;
@@ -133,9 +128,9 @@ export interface ICallbacks {
     edgeDragoverConnector: (event: Event, connector: IConnector) => boolean;
     edgeDragoverMagnet: (event: Event, connector: IConnector) => boolean;
     edgeDragleaveMagnet: (event: Event) => void;
-    nodeMouseOver: (event: MouseEvent, node: INode) => void;
-    nodeMouseOut: (event: MouseEvent, node: INode) => void;
+    nodeMouseOver: (event: MouseEvent, node: IVertex) => void;
+    nodeMouseOut: (event: MouseEvent, node: IVertex) => void;
     connectorMouseEnter: (event: MouseEvent, connector: IConnector) => void;
     connectorMouseLeave: (event: MouseEvent, connector: IConnector) => void;
-    nodeClicked: (event: MouseEvent, node: INode) => void;
+    nodeClicked: (event: MouseEvent, node: IVertex) => void;
   }

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { EdgeComponent } from './edge.component';
+import { VertexContainerComponent } from './vertex-container.component';
 
-describe('EdgeComponent', () => {
-  let component: EdgeComponent;
-  let fixture: ComponentFixture<EdgeComponent>;
+describe('VertexContainerComponent', () => {
+  let component: VertexContainerComponent;
+  let fixture: ComponentFixture<VertexContainerComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EdgeComponent ]
+      declarations: [ VertexContainerComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(EdgeComponent);
+    fixture = TestBed.createComponent(VertexContainerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

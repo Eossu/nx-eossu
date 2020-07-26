@@ -1,1 +1,23 @@
-<p>workspace works!</p>
+<div>
+  <svg>
+    <g *ngFor="let edge of models.edges; let $index = index">
+      <path
+        [attr.id]="'eossu-fc-path-' + $index"
+        [attr.class]=""
+        [attr.d]="getEdgeAttributeSvgD(edge)"
+        (mousedown)="edgeMouseDown($event, edge)"
+        (click)="edgeClick($event, edge)"
+        (dbclick)="edgeDoubleClick($event, edge)"
+        (mouseover)="edgeMouseOver($event, edge)"
+        (mouseenter)="edgeMouseEnter($event, edge)"
+        (mouseleave)="edgeMouseLeave($event, edge)">
+      </path>
+    </g>
+  </svg>
+
+  <ng-container *ngFor="let vertex of models.vertexes">
+    <eossu-fc-vertex-container
+      [selected]=isSelected(vertex)>
+    </eossu-fc-vertex-container>
+  </ng-container>
+</div>
