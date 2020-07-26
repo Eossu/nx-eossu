@@ -1,0 +1,19 @@
+.workspace {
+    user-select: none;
+
+    .edges {
+        stroke: black;
+        fill: none;
+    }
+
+    .vertexes {
+        &:focus {
+            outline: none;
+        }
+    }
+
+    .panning-rect {
+        fill: rgba(0, 0, 0, 0);
+        cursor: move;
+    }
+}

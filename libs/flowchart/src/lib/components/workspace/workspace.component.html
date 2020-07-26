@@ -1,23 +1,80 @@
-<div>
-  <svg>
-    <g *ngFor="let edge of models.edges; let $index = index">
-      <path
-        [attr.id]="'eossu-fc-path-' + $index"
-        [attr.class]=""
-        [attr.d]="getEdgeAttributeSvgD(edge)"
-        (mousedown)="edgeMouseDown($event, edge)"
+<svg
+  eossu-fc-mousewheel
+  (mousewheelUp)="onZoom($event, 'in')"
+  (mousewheelDown)="onZoom($event, 'out')"
+>
+  <g *ngIf="initialized" class="workspace">
+    <defs>
+      <ng-container
+        *ngIf="defsTemplate"
+        [ngTemplateOutlet]="defsTemplate"
+      ></ng-container>
+    </defs>
+
+    <rect class="panning-rect [attr.width]="dims.width * 100"
+    [attr.height]="dims.height * 100" [attr.transform]="'translate(' +
+    (-dims.width || 0) * 50 + ',' + (-dims.height || 0) * 50 + ')'"
+    (mousedown)="isPanning = true" />
+
+    <ng-content></ng-content>
+
+    <g class="edges">
+      <g
+        #edgeElement
+        *ngFor="let edge of model.edges"
+        [attr.id]="edge.id"
         (click)="edgeClick($event, edge)"
         (dbclick)="edgeDoubleClick($event, edge)"
+        (mousedown)="edgeMouseDown($event, edge)"
         (mouseover)="edgeMouseOver($event, edge)"
         (mouseenter)="edgeMouseEnter($event, edge)"
-        (mouseleave)="edgeMouseLeave($event, edge)">
-      </path>
-    </g>
-  </svg>
+        (mouseleave)="edgeMouseLeave($event, edge)"
+      >
+        <ng-container
+          *ngIf="edgeTemplate"
+          [ngTemplateOutlet]="edgeTemplate"
+          [ngTemplateOutletContext]="{ $implicit: edge }"
+        ></ng-container>
 
-  <ng-container *ngFor="let vertex of models.vertexes">
-    <eossu-fc-vertex-container
-      [selected]=isSelected(vertex)>
-    </eossu-fc-vertex-container>
-  </ng-container>
-</div>
+        <path
+          *ngIf="!vertexTemplate"
+          class="edge"
+          [attr.d]="getEdgeAttributeSvgD(edge)"
+        ></path>
+      </g>
+    </g>
+
+    <g class="vertexes">
+      <g
+        #vertexElement
+        *ngFor="let vertex of model.vertexs"
+        [attr.id]="vertex.id"
+        (click)="vertexClick($event, vertex)"
+        (dbclick)="vertexDoubleClick($event, vertex)"
+        (mousedown)="vertexMouseDown($event, vertex)"
+        (mouseover)="vertexMouseOver($event, vertex)"
+        (mouseenter)="vertexMouseEnter($event, vertex)"
+        (mouseleave)="vertexMouseLeave($event, vertex)"
+      >
+        >
+
+        <ng-container
+          *ngIf="vertexTemplate"
+          [ngTemplateOutlet]="vertexTemplate"
+          [ngTemplateOutletContext]="{ $implicit: vertex }"
+        ></ng-container>
+
+        <rect
+          *ngIf="!vertexTemplate"
+          x="vertex.x"
+          y="vertex.y"
+          height="vertex.height"
+          width="vertex.width"
+          rx="vertex.radius"
+        />
+      </g>
+    </g>
+  </g>
+
+  <g class="minimap" *ngIf="minimap"><eossu-fc-minimap></eossu-fc-minimap></g>
+</svg>

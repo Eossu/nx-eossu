@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { VertexContainerComponent } from './vertex-container.component';
+import { MinimapComponent } from './minimap.component';
 
-describe('VertexContainerComponent', () => {
-  let component: VertexContainerComponent;
-  let fixture: ComponentFixture<VertexContainerComponent>;
+describe('MinimapComponent', () => {
+  let component: MinimapComponent;
+  let fixture: ComponentFixture<MinimapComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ VertexContainerComponent ]
+      declarations: [ MinimapComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(VertexContainerComponent);
+    fixture = TestBed.createComponent(MinimapComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

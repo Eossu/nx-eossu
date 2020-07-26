@@ -1,20 +1,36 @@
-import { Component, OnInit } from '@angular/core';
-import { IEdge, IVertex, IConnector } from '../../flowchart.interfaces';
-import { DrawingEdgeService } from '../../services/drawing-edge.service';
+import { Component, OnInit, Input, Output, ContentChild, ViewChild, ViewChildren, TemplateRef, QueryList, ElementRef, ContentChildren, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import { IEdge, IVertex, IConnector, IWorkspaceModel } from '../../flowchart.interfaces';
 
 @Component({
-  selector: 'eossu-workspace',
+  selector: 'eossu-fc-workspace',
   templateUrl: './workspace.component.html',
-  styleUrls: ['./workspace.component.scss']
+  styleUrls: ['./workspace.component.scss'],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WorkspaceComponent implements OnInit {
 
-  constructor(
-    private _edgeDrw: DrawingEdgeService
-  ) { }
+  @Input() model: IWorkspaceModel;
+  @Input() minimap: boolean;
+
+  @ContentChild('defsTemplate') defsTemplate: TemplateRef<any>;
+  @ContentChild('vertexTemplate') vertexTemplate: TemplateRef<any>;
+  @ContentChild('edgeTemplate') edgeTemplate: TemplateRef<any>;
+  @ContentChild('connectorTemplate') connectorTemplate: TemplateRef<any>;
+
+  @ViewChildren('vertexElement') vertexElements: QueryList<ElementRef>;
+  @ViewChildren('edgeElement') edgeElements: QueryList<ElementRef>;
+  @ViewChildren('connectorElement') connectorElements: QueryList<ElementRef>;
+
+  initialized = false;
+  isPanning = false;
+
+  constructor() { }
 
   ngOnInit(): void {
   }
+
+  onZoom($event: MouseWheelEvent, zoom: string): void {}
 
   getEdgeAttributeSvgD(edge: IEdge): string {}
 
@@ -29,6 +45,18 @@ export class WorkspaceComponent implements OnInit {
   edgeMouseEnter($event: MouseEvent, edge: IEdge): void {}
 
   edgeMouseLeave($event: MouseEvent, edge: IEdge): void {}
+
+  vertexMouseDown($event: MouseEvent, vertex: IVertex): void {}
+
+  vertexClick($event: MouseEvent, vertex: IVertex): void {}
+
+  vertexDoubleClick($event: MouseEvent, vertex: IVertex): void {}
+
+  vertexMouseOver($event: MouseEvent, vertex: IVertex): void {}
+
+  vertexMouseEnter($event: MouseEvent, vertex: IVertex): void {}
+
+  vertexMouseLeave($event: MouseEvent, vertex: IVertex): void {}
 
   isSelected(model: IEdge | IVertex): void {}
 

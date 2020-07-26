@@ -52,47 +52,43 @@ export interface IRectangle {
 }
 
 
+export interface ICircle {
+    cx: number;
+    cy: number;
+    radius: number;
+}
+
+
 export interface IConnector extends ID, ISelection {
     type: ConnectorType;
 }
 
 
 export interface IVertex extends ID, ICordinates, ISelection {
-    name: string;
+    title: string;
     connectors: Array<IConnector>;
     readonly?: boolean;
     [key: string]: any;
 }
 
 
-export interface INodeRectangleInfo {
-    width(): number;
-    height(): number;
-    top(): number;
-    left(): number;
-    right(): number;
-    bottom(): number;
-}
-
-
-export interface IConnectorRectangleInfo {
-    type: ConnectorType;
-    width: number
-    height: number;
-    nodeRectagleInfo: INodeRectangleInfo;
-}
-
-
-export interface IEdge extends ISelection {
+export interface IEdge extends ID, ISelection {
     lable?: string;
     source?: string;
     destination?: string;
     active?: boolean;
 }
 
+
 export interface IWorkspaceModel {
-    nodes: Array<IVertex>;
+    vertexs: Array<IVertex>;
     edges: Array<IEdge>;
+}
+
+
+export interface View {
+    width: number;
+    height: number;
 }
 
 
