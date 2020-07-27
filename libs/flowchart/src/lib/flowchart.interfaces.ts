@@ -52,9 +52,7 @@ export interface IRectangle {
 }
 
 
-export interface ICircle {
-    cx: number;
-    cy: number;
+export interface ICircle extends ICordinates {
     radius: number;
 }
 

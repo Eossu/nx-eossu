@@ -11,24 +11,14 @@
       ></ng-container>
     </defs>
 
-    <rect class="panning-rect [attr.width]="dims.width * 100"
-    [attr.height]="dims.height * 100" [attr.transform]="'translate(' +
-    (-dims.width || 0) * 50 + ',' + (-dims.height || 0) * 50 + ')'"
-    (mousedown)="isPanning = true" />
-
     <ng-content></ng-content>
 
     <g class="edges">
       <g
-        #edgeElement
         *ngFor="let edge of model.edges"
+        eossu-fc-edge
+        [edge]="edge"
         [attr.id]="edge.id"
-        (click)="edgeClick($event, edge)"
-        (dbclick)="edgeDoubleClick($event, edge)"
-        (mousedown)="edgeMouseDown($event, edge)"
-        (mouseover)="edgeMouseOver($event, edge)"
-        (mouseenter)="edgeMouseEnter($event, edge)"
-        (mouseleave)="edgeMouseLeave($event, edge)"
       >
         <ng-container
           *ngIf="edgeTemplate"
@@ -46,15 +36,10 @@
 
     <g class="vertexes">
       <g
-        #vertexElement
         *ngFor="let vertex of model.vertexs"
+        eossu-fc-vertex
+        [vertex]="vertex"
         [attr.id]="vertex.id"
-        (click)="vertexClick($event, vertex)"
-        (dbclick)="vertexDoubleClick($event, vertex)"
-        (mousedown)="vertexMouseDown($event, vertex)"
-        (mouseover)="vertexMouseOver($event, vertex)"
-        (mouseenter)="vertexMouseEnter($event, vertex)"
-        (mouseleave)="vertexMouseLeave($event, vertex)"
       >
         >
 
