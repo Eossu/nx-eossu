@@ -15,14 +15,14 @@ export interface ICordinates {
 }
 
 export interface IDimension {
-  height: number;
-  width: number;
+  height?: number;
+  width?: number;
   radius?: number;
 }
 
 export interface ICategory {
-  name?: string;
-  color?: string;
+  name: string;
+  color: string;
 }
 
 export interface IBorder {
