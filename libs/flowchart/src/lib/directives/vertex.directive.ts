@@ -4,11 +4,14 @@ import {
   HostListener,
   ElementRef,
   OnInit,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 import { IVertex, ICordinates, IConnector } from '../flowchart.interfaces';
 import { SvgService } from '../services/svg.service';
 import { colorLuminance } from '../color.helpers';
 import { VertexType, ConnectorType } from '../flowchart.enums';
+import { SelectEvent } from '../flowchart.events';
 
 @Directive({
   selector: '[eossuFcVertex]',
@@ -16,11 +19,16 @@ import { VertexType, ConnectorType } from '../flowchart.enums';
 export class VertexDirective implements OnInit {
   @Input() vertex: IVertex;
 
+  @Output() selected = new EventEmitter<SelectEvent>();
+
   private _dragging = false;
+  private _dragged = false;
   private _offset: ICordinates = { x: 0.0, y: 0.0 };
   private _originalColor: string = '';
   private _leftMaxDrag = 0.0;
   private _topMaxDrag = 0.0;
+
+  private readonly _lumChange = 0.12;
 
   constructor(
     private _elementRef: ElementRef<SVGSVGElement>,
@@ -28,18 +36,45 @@ export class VertexDirective implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (!this.vertex.border) this.vertex.border = { width: 1, color: colorLuminance('#fff', 0.12) }
+    if (!this.vertex.border)
+      this.vertex.border = { width: 1, color: colorLuminance('#fff', 0.12) };
+
     this.vertex.connectors.map((connector) => {
-      if (!connector.border) connector.border = { width: 1, color: colorLuminance('#fff', 0.12)}
+      if (!connector.border)
+        connector.border = { width: 1, color: colorLuminance('#fff', 0.12) };
+
       this.calculateConnectorPosition(connector);
     });
+
+    this.vertex.selected = false;
 
     this._leftMaxDrag = this.vertex.border.width;
     this._topMaxDrag = this.vertex.border.width;
   }
 
+  unSelect(): void {
+    this.vertex.selected = false;
+    this.changeBackgroundColor(true);
+  }
+
   @HostListener('click', ['$event'])
-  onClick($event: MouseEvent): void {}
+  onClick(event: MouseEvent): void {
+    if (this._dragged) {
+      this._dragged = false;
+      return;
+    }
+
+    this.vertex.selected = !this.vertex.selected;
+    this.changeBackgroundColor(!this.vertex.selected);
+
+    const selectedEvent = new SelectEvent(
+      'vertex',
+      this.vertex.id,
+      event.shiftKey
+    );
+    this.selected.emit(selectedEvent);
+    event.stopPropagation();
+  }
 
   @HostListener('mousedown', ['$event'])
   onMouseDown(event: MouseEvent): void {
@@ -57,29 +92,40 @@ export class VertexDirective implements OnInit {
   @HostListener('mouseenter', ['$event'])
   onMouseEnter($event: MouseEvent): void {
     if (!this.vertex.readonly) {
-      this._originalColor = this.vertex.category.color;
-      this.vertex.category.color = this.vertex.category.color = colorLuminance(
-        this._originalColor,
-        0.12
-      );
+      this.changeBackgroundColor();
     }
   }
 
   @HostListener('mouseleave', ['$event'])
   onMouseLeave($event: MouseEvent): void {
     this._dragging = false;
-    if (this._originalColor) this.vertex.category.color = this._originalColor;
+
+    if (!this.vertex.selected) this.changeBackgroundColor(true);
   }
 
   @HostListener('mousemove', ['$event'])
   onMouseMove(event: MouseEvent): void {
     if (this._dragging) {
-      event.preventDefault();
+      event.stopPropagation();
+      this._dragged = true;
 
       this.calculateVertexPosition(event);
       this.vertex.connectors.map((connector) => {
         this.calculateConnectorPosition(connector);
       });
+    }
+  }
+
+  private changeBackgroundColor(original = false) {
+    if (!this._originalColor) this._originalColor = this.vertex.category.color;
+
+    if (!original) {
+      this.vertex.category.color = colorLuminance(
+        this._originalColor,
+        this._lumChange
+      );
+    } else {
+      this.vertex.category.color = this._originalColor;
     }
   }
 

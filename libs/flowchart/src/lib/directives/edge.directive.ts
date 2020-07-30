@@ -9,6 +9,8 @@ export class EdgeDirective {
 
   constructor() {}
 
+  unSelect(): void {}
+
   @HostListener('click', ['$event'])
   onClick($event: MouseEvent): void {}
 

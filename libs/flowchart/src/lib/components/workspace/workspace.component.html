@@ -1,8 +1,5 @@
-<section cdkDropList (cdkDropListDropped)="onDrop($event)">
-  <svg #workspaceBoard
-    [attr.width]="view.width"
-    [attr.height]="view.height"
-  >
+<section>
+  <svg #workspaceBoard [attr.width]="view.width" [attr.height]="view.height">
     <g class="workspace">
       <defs>
         <ng-container
@@ -40,6 +37,7 @@
           eossuFcVertex
           [vertex]="vertex"
           [attr.id]="vertex.id"
+          (selected)="onSelected($event)"
         >
           <ng-container
             *ngIf="vertexTemplate"

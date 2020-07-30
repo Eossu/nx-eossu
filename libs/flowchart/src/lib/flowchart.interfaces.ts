@@ -30,10 +30,11 @@ export interface IBorder {
   width: number;
 }
 
-export interface IConnector extends ID, ISelection, IDimension, ICordinates {
+export interface IConnector extends ID, IDimension, ICordinates {
   type: ConnectorType;
   color?: string;
   border?: IBorder;
+  callbacks?: IUserCallbacks;
   [key: string]: any;
 }
 
@@ -44,6 +45,7 @@ export interface IVertex extends ID, ICordinates, IDimension, ISelection {
   readonly?: boolean;
   border?: IBorder;
   category?: ICategory;
+  callbacks?: IUserCallbacks;
   [key: string]: any;
 }
 
@@ -52,6 +54,7 @@ export interface IEdge extends ID, ISelection {
   source?: string;
   destination?: string;
   active?: boolean;
+  callbacks?: IUserCallbacks;
   [key: string]: any;
 }
 
@@ -65,39 +68,11 @@ export interface IView {
   height: number | string;
 }
 
-export interface IUserNodeCallbacks {
-  nodeEdit?: (event: MouseEvent, node: IVertex) => void;
-  doubleClick?: (event: MouseEvent, node: IVertex) => void;
-  mouseDown?: (event: MouseEvent, node: IVertex) => void;
-  mouseEnter?: (event: MouseEvent, node: IVertex) => void;
-  mouseLeave?: (event: MouseEvent, node: IVertex) => void;
-}
-
 export interface IUserCallbacks {
-  dropNode?: (event: Event, node: IVertex) => void;
-  createEdge?: (event: Event, edge: IEdge) => Observable<IEdge>;
-  edgeAdded?: (edge: IEdge) => void;
-  nodeRemoved?: (node: IVertex) => void;
-  edgeRemoved?: (edge: IEdge) => void;
-  edgeDoubleClick?: (event: MouseEvent, edge: IEdge) => void;
-  edgeMouseOver?: (event: MouseEvent, edge: IEdge) => void;
-  isValidEdge?: (source: IConnector, destination: IConnector) => boolean;
-  edgeEdit?: (event: Event, edge: IEdge) => void;
-  nodeCallbacks?: IUserNodeCallbacks;
-}
-
-export interface ICallbacks {
-  nodeDragstart: (event: Event, node: IVertex) => void;
-  nodeDragend: (event: Event) => void;
-  edgeDragstart: (event: Event, connector: IConnector) => void;
-  edgeDragend: (event: Event) => void;
-  edgeDrop: (event: Event, targetConnector: IConnector) => boolean;
-  edgeDragoverConnector: (event: Event, connector: IConnector) => boolean;
-  edgeDragoverMagnet: (event: Event, connector: IConnector) => boolean;
-  edgeDragleaveMagnet: (event: Event) => void;
-  nodeMouseOver: (event: MouseEvent, node: IVertex) => void;
-  nodeMouseOut: (event: MouseEvent, node: IVertex) => void;
-  connectorMouseEnter: (event: MouseEvent, connector: IConnector) => void;
-  connectorMouseLeave: (event: MouseEvent, connector: IConnector) => void;
-  nodeClicked: (event: MouseEvent, node: IVertex) => void;
+  click?: (event: MouseEvent, model: IVertex | IEdge | IConnector) => void;
+  doubleClick?: (event: MouseEvent, model: IVertex | IEdge | IConnector) => void;
+  mouseDown?: (event: MouseEvent, model: IVertex | IEdge | IConnector) => void;
+  mouseEnter?: (event: MouseEvent, model: IVertex | IEdge | IConnector) => void;
+  mouseLeave?: (event: MouseEvent, model: IVertex | IEdge | IConnector) => void;
+  mouseUp?: (event: MouseEvent, model: IVertex | IEdge | IConnector) => void;
 }

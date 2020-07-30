@@ -9,9 +9,6 @@ import {
 import { v4 as uuid4 } from 'uuid';
 
 import { IConnector, IVertex, IEdge } from '../flowchart.interfaces';
-import { WorkspaceService } from '../services/workspace.service';
-import { SvgService } from '../services/svg.service';
-import { ConnectorType, VertexType } from '../flowchart.enums';
 import { colorLuminance } from '../color.helpers';
 
 @Directive({
@@ -25,9 +22,7 @@ export class ConnectorDirective implements OnInit {
   private _edge: IEdge;
   private _originalColor: string;
 
-  constructor(
-    private _workspaceSvc: WorkspaceService,
-  ) {}
+  constructor() {}
 
   ngOnInit(): void {
     if (!this.connector.color)
@@ -42,7 +37,6 @@ export class ConnectorDirective implements OnInit {
         id: uuid4(),
         source: this.vertex.id,
       };
-      this._workspaceSvc.addEdge(this._edge);
     }
   }
 
