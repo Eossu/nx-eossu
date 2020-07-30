@@ -1,5 +1,7 @@
 <section cdkDropList (cdkDropListDropped)="onDrop($event)">
   <svg
+    [attr.width]="view.width"
+    [attr.height]="view.height"
     eossu-fc-mousewheel
     (mousewheelUp)="onZoom($event, 'in')"
     (mousewheelDown)="onZoom($event, 'out')"
@@ -14,7 +16,7 @@
 
       <ng-content></ng-content>
 
-      <g #edges class="edges">
+      <g class="edges">
         <g
           *ngFor="let edge of model.edges"
           eossuFcEdge
@@ -35,7 +37,7 @@
         </g>
       </g>
 
-      <g #vertexs class="vertexes">
+      <g class="vertexes">
         <g
           *ngFor="let vertex of model.vertexs"
           eossuFcVertex

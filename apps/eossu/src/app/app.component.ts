@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { LineStyle, IWorkspaceModel } from '@eossu/flowchart';
+import { LineStyle, IWorkspaceModel, IView } from '@eossu/flowchart';
 
 @Component({
   selector: 'eossu-root',
@@ -7,6 +7,10 @@ import { LineStyle, IWorkspaceModel } from '@eossu/flowchart';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+  view: IView = {
+    height: '100%',
+    width: '100%',
+  };
   model: IWorkspaceModel = {
     edges: [],
     vertexs: [],

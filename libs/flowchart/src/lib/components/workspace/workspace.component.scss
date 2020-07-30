@@ -1,19 +1,24 @@
-.workspace {
+section {
+  height: 100%;
+  width: 100%;
+
+  .workspace {
     user-select: none;
 
     .edges {
-        stroke: black;
-        fill: none;
+      stroke: black;
+      fill: none;
     }
 
     .vertexes {
-        &:focus {
-            outline: none;
-        }
+      &:focus {
+        outline: none;
+      }
     }
 
     .panning-rect {
-        fill: rgba(0, 0, 0, 0);
-        cursor: move;
+      fill: rgba(0, 0, 0, 0);
+      cursor: move;
     }
+  }
 }

@@ -20,6 +20,7 @@ import {
   IConnector,
   IWorkspaceModel,
   ISelection,
+  IView,
 } from '../../flowchart.interfaces';
 import { VertexDirective } from '../../directives/vertex.directive';
 import { EdgeDirective } from '../../directives/edge.directive';
@@ -41,6 +42,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   @Input() model: IWorkspaceModel;
   @Input() edgeStyle: LineStyle;
   @Input() minimap: boolean;
+  @Input() view: IView;
 
   @ContentChild('defsTemplate') defsTemplate: TemplateRef<any>;
   @ContentChild('vertexTemplate') vertexTemplate: TemplateRef<any>;
@@ -93,5 +95,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     return this._svgSrc.drawSvgPathLine(sourceVertex, destVertex, this.edgeStyle);
   }
 
-  onZoom($event: MouseWheelEvent, zoom: string): void {}
+  onZoom($event: MouseWheelEvent, zoom: string): void {
+    console.log(`zoom ${zoom} with event `, $event);
+  }
 }

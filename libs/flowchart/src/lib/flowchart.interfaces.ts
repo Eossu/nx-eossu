@@ -51,8 +51,8 @@ export interface IWorkspaceModel {
 }
 
 export interface IView {
-  width: number;
-  height: number;
+  width: number | string;
+  height: number | string;
 }
 
 export interface IUserNodeCallbacks {
