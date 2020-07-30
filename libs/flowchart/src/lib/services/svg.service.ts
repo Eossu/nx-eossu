@@ -19,13 +19,14 @@ export class SvgService {
    *
    * @returns The SVGPoint
    */
-  getSVGPoint(event: MouseEvent, element: SVGSVGElement): SVGPoint {
-    const point = element.createSVGPoint();
+  getSVGPoint(event: MouseEvent, element: SVGSVGElement): ICordinates {
+    const point = element.ownerSVGElement.createSVGPoint();
     point.x = event.x;
     point.y = event.y;
 
     const CTM = element.getScreenCTM();
-    return point.matrixTransform(CTM.inverse());
+    const calcPoint = point.matrixTransform(CTM.inverse());
+    return { x: calcPoint.x, y: calcPoint.y };
   }
 
   /**

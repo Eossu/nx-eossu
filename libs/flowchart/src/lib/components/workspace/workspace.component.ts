@@ -35,7 +35,7 @@ import { LineStyle } from '../../flowchart.enums';
   selector: 'eossu-fc-workspace',
   templateUrl: './workspace.component.html',
   styleUrls: ['./workspace.component.scss'],
-  encapsulation: ViewEncapsulation.None,
+  //encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorkspaceComponent implements OnInit, OnDestroy {
@@ -49,7 +49,6 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   @ContentChild('edgeTemplate') edgeTemplate: TemplateRef<any>;
   @ContentChild('connectorTemplate') connectorTemplate: TemplateRef<any>;
 
-  initialized = false;
   isPanning = false;
 
   private subscriptions = new Subscription();

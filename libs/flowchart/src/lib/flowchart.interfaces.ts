@@ -21,8 +21,13 @@ export interface IDimension {
 }
 
 export interface ICategory {
-  name: string;
+  name?: string;
+  color?: string;
+}
+
+export interface IBorder {
   color: string;
+  width: string;
 }
 
 export interface IConnector extends ID, ISelection, IDimension, ICordinates {
@@ -30,10 +35,12 @@ export interface IConnector extends ID, ISelection, IDimension, ICordinates {
   [key: string]: any;
 }
 
-export interface IVertex extends ID, ICordinates, IDimension, ISelection, ICategory {
-  title: string;
-  connectors: Array<IConnector>;
+export interface IVertex extends ID, ICordinates, IDimension, ISelection {
+  title?: string;
+  connectors?: Array<IConnector>;
   readonly?: boolean;
+  border?: IBorder;
+  category?: ICategory;
   [key: string]: any;
 }
 

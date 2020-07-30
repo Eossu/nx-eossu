@@ -6,7 +6,7 @@
     (mousewheelUp)="onZoom($event, 'in')"
     (mousewheelDown)="onZoom($event, 'out')"
   >
-    <g *ngIf="initialized" class="workspace">
+    <g class="workspace">
       <defs>
         <ng-container
           *ngIf="defsTemplate"
@@ -52,11 +52,14 @@
 
           <rect
             *ngIf="!vertexTemplate"
-            x="vertex.x"
-            y="vertex.y"
-            height="vertex.height"
-            width="vertex.width"
-            rx="vertex.radius"
+            [attr.x]="vertex.x"
+            [attr.y]="vertex.y"
+            [attr.height]="vertex.height"
+            [attr.width]="vertex.width"
+            [attr.rx]="vertex.radius"
+            [attr.fill]="vertex.category.color"
+            [attr.stroke]="'#fff'"
+            [attr.stroke-width]="'1px'"
           />
 
           <g

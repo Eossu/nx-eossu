@@ -1,5 +1,5 @@
 import { Directive, Input, HostListener, ElementRef } from '@angular/core';
-import { IVertex } from '../flowchart.interfaces';
+import { IVertex, ICordinates } from '../flowchart.interfaces';
 import { SvgService } from '../services/svg.service';
 
 @Directive({
@@ -9,6 +9,7 @@ export class VertexDirective {
   @Input() vertex: IVertex;
 
   private _dragging = false;
+  private _offset: ICordinates = { x: 0.0, y: 0.0 };
 
   constructor(
     private _elementRef: ElementRef<SVGSVGElement>,
@@ -22,15 +23,16 @@ export class VertexDirective {
   onDbclick($event: MouseEvent): void {}
 
   @HostListener('mousedown', ['$event'])
-  onMouseDown($event: MouseEvent): void {
+  onMouseDown(event: MouseEvent): void {
     if (!this.vertex.readonly) {
+      this.calculateMouseOffset(event);
       this._dragging = true;
     }
   }
 
-  @HostListener('mouseup', ["$event"])
+  @HostListener('mouseup', ['$event'])
   onMouseUp($event: MouseEvent): void {
-    this._dragging = false;
+    this._dragging = false; 
   }
 
   @HostListener('mouseover', ['$event'])
@@ -44,12 +46,30 @@ export class VertexDirective {
     this._dragging = false;
   }
 
-  @HostListener("mousemove", ["$event"])
-  onMouseMove($event: MouseEvent): void {
+  @HostListener('mousemove', ['$event'])
+  onMouseMove(event: MouseEvent): void {
     if (this._dragging) {
-      const svgPoint = this._svgDragSvc.getSVGPoint($event, this._elementRef.nativeElement);
-      this.vertex.x = svgPoint.x;
-      this.vertex.y = svgPoint.y;
+      event.preventDefault();
+      const svgPoint = this._svgDragSvc.getSVGPoint(
+        event,
+        this._elementRef.nativeElement
+      );
+      let x = svgPoint.x - this._offset.x;
+      let y = svgPoint.y - this._offset.y;
+
+      if (x < 0) x = 0;
+      if (y < 0) y =0;
+      
+      this.vertex.x = x;
+      this.vertex.y = y;
+
+      this.calculateMouseOffset(event);
     }
   }
+
+  private calculateMouseOffset(event: MouseEvent): void {
+    this._offset = this._svgDragSvc.getSVGPoint(event, this._elementRef.nativeElement);
+    this._offset.x -= this.vertex.x;
+    this._offset.y -= this.vertex.y;
+  } 
 }
