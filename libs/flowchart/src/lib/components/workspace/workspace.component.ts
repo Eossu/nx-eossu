@@ -3,28 +3,17 @@ import {
   OnInit,
   OnDestroy,
   Input,
-  Output,
   ContentChild,
-  ViewChild,
-  ViewChildren,
   TemplateRef,
-  QueryList,
-  ElementRef,
-  ContentChildren,
-  ViewEncapsulation,
   ChangeDetectionStrategy,
+  ViewEncapsulation,
 } from '@angular/core';
 import {
   IEdge,
   IVertex,
-  IConnector,
   IWorkspaceModel,
-  ISelection,
   IView,
 } from '../../flowchart.interfaces';
-import { VertexDirective } from '../../directives/vertex.directive';
-import { EdgeDirective } from '../../directives/edge.directive';
-import { ConnectorDirective } from '../../directives/connector.directive';
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { WorkspaceService } from '../../services/workspace.service';
 import { Subscription } from 'rxjs';
@@ -35,7 +24,7 @@ import { LineStyle } from '../../flowchart.enums';
   selector: 'eossu-fc-workspace',
   templateUrl: './workspace.component.html',
   styleUrls: ['./workspace.component.scss'],
-  //encapsulation: ViewEncapsulation.None,
+  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorkspaceComponent implements OnInit, OnDestroy {
@@ -75,7 +64,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
   /**
    * When we drop a new vertex on to the workspace add it to the model.
-   * 
+   *
    * @param $event Drag Drop event with the vertex data.
    */
   onDrop($event: CdkDragDrop<IVertex[]>): void {
@@ -85,13 +74,17 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
   /**
    * Generate the path line D attribute data.
-   * 
+   *
    * @param edge The edge to be drawn.
    */
   getEdgeAttributeSvgD(edge: IEdge): string {
     const sourceVertex = this._workspaceSvc.getVertexById(edge.source);
     const destVertex = this._workspaceSvc.getVertexById(edge.destination);
-    return this._svgSrc.drawSvgPathLine(sourceVertex, destVertex, this.edgeStyle);
+    return this._svgSrc.drawSvgPathLine(
+      sourceVertex,
+      destVertex,
+      this.edgeStyle
+    );
   }
 
   onZoom($event: MouseWheelEvent, zoom: string): void {
