@@ -1,29 +1,57 @@
 import { Directive, Input, HostListener } from '@angular/core';
-import { IConnector } from '../flowchart.interfaces';
+import { IConnector, IVertex, IEdge } from '../flowchart.interfaces';
+import { WorkspaceService } from '../services/workspace.service';
+import { SvgService } from '../services/svg.service';
 
 @Directive({
-  selector: '[eossu-fc-connector]',
+  selector: '[eossuFcConnector]',
 })
 export class ConnectorDirective {
   @Input() connector: IConnector;
+  @Input() vertex: IVertex;
 
-  constructor() {}
+  private _drawLine = false;
+  private _edge: IEdge;
+
+  constructor(
+    private _workspaceSvc: WorkspaceService,
+    private _svgSvc: SvgService
+  ) {}
 
   @HostListener('click', ['$event'])
-  click($event: MouseEvent): void {}
+  onClick($event: MouseEvent): void {}
 
   @HostListener('dbclick', ['$event'])
-  dbclick($event: MouseEvent): void {}
+  onDbclick($event: MouseEvent): void {}
 
-  @HostListener('mousedown', ['$event'])
-  mousedown($event: MouseEvent): void {}
+  @HostListener('mousedown', ['$event']) // FIXME: Add a unique id to the new edge.
+  onMouseDown($event: MouseEvent): void {
+    if (this.vertex.readonly) {
+      this._drawLine = true;
+      this._edge = {
+        id: '',
+        source: this.vertex.id
+      }
+      this._workspaceSvc.addEdge(this._edge);
+    }
+  }
+
+  @HostListener('mouseup', ['$event'])
+  onMouseUp($event: MouseEvent): void {
+    this._drawLine = false;
+  }
 
   @HostListener('mouseover', ['$event'])
-  mouseover($event: MouseEvent): void {}
+  onMouseOver($event: MouseEvent): void {}
 
   @HostListener('mouseenter', ['$event'])
-  mouseenter($event: MouseEvent): void {}
+  onMouseEnter($event: MouseEvent): void {}
 
   @HostListener('mouseleave', ['$event'])
-  mouseleave($event: MouseEvent): void {}
+  onMouseLeave($event: MouseEvent): void {
+    this._drawLine = false;
+  }
+
+  @HostListener('mousemove', ['$event'])
+  onMouseMove($event: MouseEvent): void {}
 }

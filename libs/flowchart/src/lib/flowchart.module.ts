@@ -12,6 +12,8 @@ import { ConnectorDirective } from './directives/connector.directive';
 import { EdgeDirective } from './directives/edge.directive';
 
 import { SvgService } from './services/svg.service';
+import { WorkspaceService } from './services/workspace.service';
+import { MagnetDirective } from './directives/magnet.directive';
 
 @NgModule({
   imports: [CommonModule, DragDropModule],
@@ -22,7 +24,9 @@ import { SvgService } from './services/svg.service';
     VertexDirective,
     ConnectorDirective,
     EdgeDirective,
+    MagnetDirective,
   ],
-  providers: [SvgService,],
+  providers: [SvgService, WorkspaceService],
+  exports: [WorkspaceComponent],
 })
 export class FlowchartModule {}

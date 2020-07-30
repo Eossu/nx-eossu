@@ -2,7 +2,7 @@ import { Directive, Input, HostListener } from '@angular/core';
 import { IEdge } from '../flowchart.interfaces';
 
 @Directive({
-  selector: '[eossu-fc-edge]',
+  selector: '[eossuFcEdge]',
 })
 export class EdgeDirective {
   @Input() edge: IEdge;
@@ -10,20 +10,23 @@ export class EdgeDirective {
   constructor() {}
 
   @HostListener('click', ['$event'])
-  click($event: MouseEvent): void {}
+  onClick($event: MouseEvent): void {}
 
   @HostListener('dbclick', ['$event'])
-  dbclick($event: MouseEvent): void {}
+  onDbclick($event: MouseEvent): void {}
 
   @HostListener('mousedown', ['$event'])
-  mousedown($event: MouseEvent): void {}
+  onMouseDown($event: MouseEvent): void {}
 
   @HostListener('mouseover', ['$event'])
-  mouseover($event: MouseEvent): void {}
+  onMouseOver($event: MouseEvent): void {}
 
   @HostListener('mouseenter', ['$event'])
-  mouseenter($event: MouseEvent): void {}
+  onMouseEnter($event: MouseEvent): void {}
 
   @HostListener('mouseleave', ['$event'])
-  mouseleave($event: MouseEvent): void {}
+  onMouseLeave($event: MouseEvent): void {}
+
+  @HostListener("mousemove", ["$event"])
+  onMouseMove($event: MouseEvent): void {}
 }

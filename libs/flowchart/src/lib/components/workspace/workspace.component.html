@@ -1,65 +1,86 @@
-<svg
-  eossu-fc-mousewheel
-  (mousewheelUp)="onZoom($event, 'in')"
-  (mousewheelDown)="onZoom($event, 'out')"
->
-  <g *ngIf="initialized" class="workspace">
-    <defs>
-      <ng-container
-        *ngIf="defsTemplate"
-        [ngTemplateOutlet]="defsTemplate"
-      ></ng-container>
-    </defs>
-
-    <ng-content></ng-content>
-
-    <g class="edges">
-      <g
-        *ngFor="let edge of model.edges"
-        eossu-fc-edge
-        [edge]="edge"
-        [attr.id]="edge.id"
-      >
+<section cdkDropList (cdkDropListDropped)="onDrop($event)">
+  <svg
+    eossu-fc-mousewheel
+    (mousewheelUp)="onZoom($event, 'in')"
+    (mousewheelDown)="onZoom($event, 'out')"
+  >
+    <g *ngIf="initialized" class="workspace">
+      <defs>
         <ng-container
-          *ngIf="edgeTemplate"
-          [ngTemplateOutlet]="edgeTemplate"
-          [ngTemplateOutletContext]="{ $implicit: edge }"
+          *ngIf="defsTemplate"
+          [ngTemplateOutlet]="defsTemplate"
         ></ng-container>
+      </defs>
 
-        <path
-          *ngIf="!vertexTemplate"
-          class="edge"
-          [attr.d]="getEdgeAttributeSvgD(edge)"
-        ></path>
-      </g>
-    </g>
+      <ng-content></ng-content>
 
-    <g class="vertexes">
-      <g
-        *ngFor="let vertex of model.vertexs"
-        eossu-fc-vertex
-        [vertex]="vertex"
-        [attr.id]="vertex.id"
-      >
+      <g #edges class="edges">
+        <g
+          *ngFor="let edge of model.edges"
+          eossuFcEdge
+          [edge]="edge"
+          [attr.id]="edge.id"
         >
+          <ng-container
+            *ngIf="edgeTemplate"
+            [ngTemplateOutlet]="edgeTemplate"
+            [ngTemplateOutletContext]="{ $implicit: edge }"
+          ></ng-container>
 
-        <ng-container
-          *ngIf="vertexTemplate"
-          [ngTemplateOutlet]="vertexTemplate"
-          [ngTemplateOutletContext]="{ $implicit: vertex }"
-        ></ng-container>
+          <path
+            *ngIf="!vertexTemplate"
+            class="edge"
+            [attr.d]="getEdgeAttributeSvgD(edge)"
+          ></path>
+        </g>
+      </g>
 
-        <rect
-          *ngIf="!vertexTemplate"
-          x="vertex.x"
-          y="vertex.y"
-          height="vertex.height"
-          width="vertex.width"
-          rx="vertex.radius"
-        />
+      <g #vertexs class="vertexes">
+        <g
+          *ngFor="let vertex of model.vertexs"
+          eossuFcVertex
+          [vertex]="vertex"
+          [attr.id]="vertex.id"
+        >
+          <ng-container
+            *ngIf="vertexTemplate"
+            [ngTemplateOutlet]="vertexTemplate"
+            [ngTemplateOutletContext]="{ $implicit: vertex }"
+          ></ng-container>
+
+          <rect
+            *ngIf="!vertexTemplate"
+            x="vertex.x"
+            y="vertex.y"
+            height="vertex.height"
+            width="vertex.width"
+            rx="vertex.radius"
+          />
+
+          <g
+            *ngFor="let connector of vertex.connectors"
+            eossuFcConnector
+            [connector]="connector"
+            [vertex]="vertex"
+            [attr.id]="connector.id"
+          >
+            <ng-container
+              *ngIf="connectorTemplate"
+              [ngTemplateOutlet]="connectorTemplate"
+              [ngTemplateOutletContext]="{ $implicit: connector }"
+            ></ng-container>
+
+            <circle
+              *ngIf="!connectorTemplate"
+              cx="connector.x"
+              cy="connector.y"
+              rx="connector.radius"
+            />
+          </g>
+        </g>
       </g>
     </g>
-  </g>
 
-  <g class="minimap" *ngIf="minimap"><eossu-fc-minimap></eossu-fc-minimap></g>
-</svg>
+    <g class="minimap" *ngIf="minimap"><eossu-fc-minimap></eossu-fc-minimap></g>
+  </svg>
+</section>

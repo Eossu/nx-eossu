@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { LineStyle, IWorkspaceModel } from '@eossu/flowchart';
 
 @Component({
   selector: 'eossu-root',
@@ -6,5 +7,9 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'eossu';
+  model: IWorkspaceModel = {
+    edges: [],
+    vertexs: [],
+  };
+  lineStyle = LineStyle.Curved;
 }
