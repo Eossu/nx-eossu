@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { ConnectorType } from './flowchart.enums';
+import { ConnectorType, VertexType } from './flowchart.enums';
 
 export interface ID {
   id: string;
@@ -27,15 +27,18 @@ export interface ICategory {
 
 export interface IBorder {
   color: string;
-  width: string;
+  width: number;
 }
 
 export interface IConnector extends ID, ISelection, IDimension, ICordinates {
   type: ConnectorType;
+  color?: string;
+  border?: IBorder;
   [key: string]: any;
 }
 
 export interface IVertex extends ID, ICordinates, IDimension, ISelection {
+  type?: VertexType;
   title?: string;
   connectors?: Array<IConnector>;
   readonly?: boolean;

@@ -7,6 +7,9 @@ import {
   TemplateRef,
   ChangeDetectionStrategy,
   ViewEncapsulation,
+  HostListener,
+  ElementRef,
+  ViewChild,
 } from '@angular/core';
 import {
   IEdge,
@@ -37,10 +40,13 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   @ContentChild('vertexTemplate') vertexTemplate: TemplateRef<any>;
   @ContentChild('edgeTemplate') edgeTemplate: TemplateRef<any>;
   @ContentChild('connectorTemplate') connectorTemplate: TemplateRef<any>;
+  
+  @ViewChild('workspaceBoard') workspaceBoard: ElementRef<SVGSVGElement>;
 
   isPanning = false;
 
-  private subscriptions = new Subscription();
+  private _subscriptions = new Subscription();
+  private _scale = 1;
 
   constructor(
     private _workspaceSvc: WorkspaceService,
@@ -58,8 +64,8 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-    this.subscriptions = null;
+    this._subscriptions.unsubscribe();
+    this._subscriptions = null;
   }
 
   /**
@@ -85,9 +91,5 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
       destVertex,
       this.edgeStyle
     );
-  }
-
-  onZoom($event: MouseWheelEvent, zoom: string): void {
-    console.log(`zoom ${zoom} with event `, $event);
   }
 }

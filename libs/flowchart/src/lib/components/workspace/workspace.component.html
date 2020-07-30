@@ -1,10 +1,7 @@
 <section cdkDropList (cdkDropListDropped)="onDrop($event)">
-  <svg
+  <svg #workspaceBoard
     [attr.width]="view.width"
     [attr.height]="view.height"
-    eossu-fc-mousewheel
-    (mousewheelUp)="onZoom($event, 'in')"
-    (mousewheelDown)="onZoom($event, 'out')"
   >
     <g class="workspace">
       <defs>
@@ -58,10 +55,13 @@
             [attr.width]="vertex.width"
             [attr.rx]="vertex.radius"
             [attr.fill]="vertex.category.color"
-            [attr.stroke]="'#fff'"
-            [attr.stroke-width]="'1px'"
+            [attr.stroke]="vertex.border.color"
+            [attr.stroke-width]="vertex.border.width"
           />
-
+        </g>
+      </g>
+      <g>
+        <g class="connectors" *ngFor="let vertex of model.vertexs">
           <g
             *ngFor="let connector of vertex.connectors"
             eossuFcConnector
@@ -77,9 +77,12 @@
 
             <circle
               *ngIf="!connectorTemplate"
-              cx="connector.x"
-              cy="connector.y"
-              rx="connector.radius"
+              [attr.cx]="connector.x"
+              [attr.cy]="connector.y"
+              [attr.r]="connector.radius"
+              [attr.fill]="connector.color"
+              [attr.stroke]="connector.border.color"
+              [attr.stroke-width]="connector.border.width"
             />
           </g>
         </g>
