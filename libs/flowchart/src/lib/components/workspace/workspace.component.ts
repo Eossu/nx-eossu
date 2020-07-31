@@ -147,8 +147,7 @@ export class WorkspaceComponent
       this._selections.push(directive);
     } else {
       this.deselect();
-      this._selections = [directive];
-      console.log(this._selections);
+      this._selections = [directive]; 
     }
   }
 
@@ -250,7 +249,6 @@ export class WorkspaceComponent
             this.model.vertexs.splice(idx, 1);
             this.removedItem.emit(directive.vertex);
           } else if (directive instanceof EdgeDirective) {
-            console.log(directive);
             const idx = this.model.edges.indexOf(directive.edge);
             this.model.edges.splice(idx, 1);
             this.removedItem.emit(directive.edge);
