@@ -15,14 +15,27 @@ export class EdgeDrawingService {
 
   constructor(private _svgSvc: SvgService) {}
 
+  /**
+   * Returns the last edge in the stream.
+   */
   get edge(): IEdge {
     return this.newEdgeSubject$.getValue();
   }
 
+  /**
+   * Returns if the service is drawing a new edge line.
+   */
   get drawing(): boolean {
     return this._drawing;
   }
 
+  /**
+   * Start to render a new edgge line and continue drawing while drawing is
+   * activated.
+   * 
+   * @param event Mouse event
+   * @param connector Connector that is drawed from else null
+   */
   renderLine(event: MouseEvent, connector?: IConnector): void {
     if (connector && !this._drawing) {
       this.startDrawing(event, connector);
@@ -34,15 +47,24 @@ export class EdgeDrawingService {
     this.drawLine(event);
   }
 
-  cancleDrawing(): void {
+  /**
+   * Cancel the drawing of the last edge in the stream. 
+   */
+  cancelDrawing(): void {
     this._drawing = false;
     this.cancleSubject$.next(this.edge);
   }
 
+  /**
+   * Start to draw a new edge, and sends it out on the stream.
+   * 
+   * @param event Mouse event
+   * @param connector Connector that triggers the drawing
+   */
   private startDrawing(event: MouseEvent, connector: IConnector): void {
     const point = this._svgSvc.getSVGPoint(
       event,
-      event.target as SVGSVGElement
+      event.target
     );
     const edge = {
       id: uuid4(),
@@ -53,6 +75,12 @@ export class EdgeDrawingService {
     this._drawing = true;
   }
 
+  /**
+   * Check if we are still over the source connector or over a
+   * destination connector.
+   * 
+   * @param connector Connector to check
+   */
   private checkConnector(connector: IConnector): boolean {
     if (!connector) return false;
     else if (connector.id === this.edge.source) return false;
@@ -62,10 +90,15 @@ export class EdgeDrawingService {
     }
   }
 
+  /**
+   * Render the new line end position.
+   * 
+   * @param event Mouse event
+   */
   private drawLine(event: MouseEvent): void {
     const point = this._svgSvc.getSVGPoint(
       event,
-      event.target as SVGSVGElement
+      event.target
     );
     this.edge.endCord = point;
   }

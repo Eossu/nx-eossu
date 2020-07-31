@@ -7,13 +7,11 @@ import { MinimapComponent } from './components/minimap/minimap.component';
 import { VertexDirective } from './directives/vertex.directive';
 import { ConnectorDirective } from './directives/connector.directive';
 import { EdgeDirective } from './directives/edge.directive';
+import { SvgPanZoomDirective } from './directives/svg-pan-zoom.directive';
 
 import { EdgeDrawingService } from './services/edge-drawing.service';
 import { SvgService } from './services/svg.service';
-
-import { MagnetDirective } from './directives/magnet.directive';
-import { SvgPanZoomDirective } from './directives/svg-pan-zoom.directive';
-
+import { DragService } from './services/drag.service';
 
 @NgModule({
   imports: [CommonModule],
@@ -23,10 +21,9 @@ import { SvgPanZoomDirective } from './directives/svg-pan-zoom.directive';
     VertexDirective,
     ConnectorDirective,
     EdgeDirective,
-    MagnetDirective,
     SvgPanZoomDirective,
   ],
-  providers: [SvgService, EdgeDrawingService],
+  providers: [SvgService, EdgeDrawingService, DragService],
   exports: [WorkspaceComponent],
 })
 export class FlowchartModule {}

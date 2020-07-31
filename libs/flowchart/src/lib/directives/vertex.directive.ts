@@ -32,7 +32,7 @@ export class VertexDirective implements OnInit {
 
   constructor(
     private _elementRef: ElementRef<SVGSVGElement>,
-    private _svgDragSvc: SvgService
+    private _svgSvc: SvgService
   ) {}
 
   ngOnInit(): void {
@@ -61,8 +61,15 @@ export class VertexDirective implements OnInit {
     this.changeFillColor(true);
   }
 
+  @HostListener('contextmenu', ['$event'])
+  onContextMenu(event: MouseEvent): void {
+    event.preventDefault();
+  }
+
   @HostListener('click', ['$event'])
   onClick(event: MouseEvent): void {
+    if (event.button === 2) return;  // disable right click
+
     if (this._dragged) {
       this._dragged = false;
       return;
@@ -82,6 +89,8 @@ export class VertexDirective implements OnInit {
 
   @HostListener('mousedown', ['$event'])
   onMouseDown(event: MouseEvent): void {
+    if (event.button === 2) return;  // disable right click.
+
     if (!this.vertex.readonly) {
       this.calculateMouseOffset(event);
       this._dragging = true;
@@ -90,19 +99,21 @@ export class VertexDirective implements OnInit {
   }
 
   @HostListener('mouseup', ['$event'])
-  onMouseUp($event: MouseEvent): void {
+  onMouseUp(event: MouseEvent): void {
+    if (event.button === 2) return;  // disable right click
+
     this._dragging = false;
   }
 
   @HostListener('mouseenter', ['$event'])
-  onMouseEnter($event: MouseEvent): void {
+  onMouseEnter(): void {
     if (!this.vertex.readonly) {
       this.changeFillColor();
     }
   }
 
   @HostListener('mouseleave', ['$event'])
-  onMouseLeave($event: MouseEvent): void {
+  onMouseLeave(): void {
     this._dragging = false;
     if (!this.vertex.selected) this.changeFillColor(true);
   }
@@ -135,7 +146,7 @@ export class VertexDirective implements OnInit {
   }
 
   private calculateMouseOffset(event: MouseEvent): void {
-    this._offset = this._svgDragSvc.getSVGPoint(
+    this._offset = this._svgSvc.getSVGPoint(
       event,
       this._elementRef.nativeElement
     );
@@ -144,7 +155,7 @@ export class VertexDirective implements OnInit {
   }
 
   private calculateVertexPosition(event: MouseEvent): void {
-    const coord = this._svgDragSvc.getSVGPoint(
+    const coord = this._svgSvc.getSVGPoint(
       event,
       this._elementRef.nativeElement
     );

@@ -1,4 +1,3 @@
-import { Observable } from 'rxjs';
 import { ConnectorType, VertexType } from './flowchart.enums';
 
 export interface ID {
@@ -12,6 +11,13 @@ export interface ISelection {
 export interface ICordinates {
   x?: number;
   y?: number;
+}
+
+export interface IRectangle {
+  x: number;
+  y: number;
+  height: number;
+  width: number;
 }
 
 export interface IDimension {

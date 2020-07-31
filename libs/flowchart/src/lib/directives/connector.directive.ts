@@ -1,7 +1,11 @@
-import { Directive, OnInit, Input, HostListener } from '@angular/core';
+import {
+  Directive,
+  OnInit,
+  Input,
+  HostListener,
+} from '@angular/core';
 
 import { IConnector, IVertex } from '../flowchart.interfaces';
-import { SvgService } from '../services/svg.service';
 import { EdgeDrawingService } from '../services/edge-drawing.service';
 
 @Directive({
@@ -13,27 +17,33 @@ export class ConnectorDirective implements OnInit {
 
   private _startDrawing = false;
 
-  constructor(
-    private _svgSvc: SvgService,
-    private _edgeDrawSvc: EdgeDrawingService
-  ) {}
+  constructor(private _edgeDrawSvc: EdgeDrawingService) {}
 
   ngOnInit(): void {
     if (!this.connector.color)
       this.connector.color = this.vertex.category.color;
   }
 
-  @HostListener('mousedown')
-  onMouseDown(): void {
+  @HostListener('contextmenu', ['$event'])
+  onContextMenu(event: MouseEvent): void {
+    event.preventDefault();
+  }
+
+  @HostListener('mousedown', ['$event'])
+  onMouseDown(event: MouseEvent): void {
+    if (event.button === 2) return; // disable right click
+
     if (!this._edgeDrawSvc.drawing) this._startDrawing = true;
   }
 
   @HostListener('mouseup', ['$event'])
   onMouseUp(event: MouseEvent): void {
+    if (event.button === 2) return; // disable right click
+
     if (this._startDrawing || this._edgeDrawSvc.drawing) {
       this._edgeDrawSvc.renderLine(event, this.connector);
       event.stopPropagation();
-    } 
+    }
   }
 
   @HostListener('mouseleave')

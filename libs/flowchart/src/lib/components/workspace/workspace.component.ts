@@ -16,7 +16,6 @@ import {
   AfterViewInit,
   Output,
   EventEmitter,
-  ChangeDetectorRef,
 } from '@angular/core';
 
 import {
@@ -71,10 +70,7 @@ export class WorkspaceComponent
   private _selections = new Array<VertexDirective | EdgeDirective>();
   private _subscriptions = new Subscription();
 
-  constructor(
-    private _svgSvc: SvgService,
-    private _edgeDrawSvc: EdgeDrawingService
-  ) {}
+  constructor(private _edgeDrawSvc: EdgeDrawingService) {}
 
   ngOnInit(): void {
     if (!this.model) {
@@ -147,7 +143,7 @@ export class WorkspaceComponent
       this._selections.push(directive);
     } else {
       this.deselect();
-      this._selections = [directive]; 
+      this._selections = [directive];
     }
   }
 
@@ -211,6 +207,13 @@ export class WorkspaceComponent
     this._selections = [];
   }
 
+  /**
+   * Triggers when the mouse button goes back 'up' this will trigger
+   * how to stop drawing edge line if drawing is happening. Either
+   * makes the new edge stick if between two connectors else remove it.
+   *
+   * @param event Mouse event
+   */
   @HostListener('mouseup', ['$event'])
   onMouseUp(event: MouseEvent): void {
     if (this._edgeDrawSvc.drawing) {
@@ -218,11 +221,19 @@ export class WorkspaceComponent
 
       // We should have selected above an connector. If not remove edge.
       if (this._edgeDrawSvc.drawing) {
-        this._edgeDrawSvc.cancleDrawing();
+        this._edgeDrawSvc.cancelDrawing();
       }
     }
   }
 
+  /**
+   * Triggers every time we move on the svg canvas unless child nodes stop
+   * event propogation.
+   *
+   * Draws the edge lines when drawing has been activated.
+   *
+   * @param event Mouse event
+   */
   @HostListener('mousemove', ['$event'])
   onMouseMove(event: MouseEvent): void {
     if (this._edgeDrawSvc.drawing) {
@@ -263,7 +274,7 @@ export class WorkspaceComponent
         });
       }
     } else if (event.keyCode === keyCodes.ESC) {
-      if (this._edgeDrawSvc.drawing) this._edgeDrawSvc.cancleDrawing();
+      if (this._edgeDrawSvc.drawing) this._edgeDrawSvc.cancelDrawing();
     }
   }
 
