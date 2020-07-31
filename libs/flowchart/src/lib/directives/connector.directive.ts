@@ -11,6 +11,8 @@ export class ConnectorDirective implements OnInit {
   @Input() connector: IConnector;
   @Input() vertex: IVertex;
 
+  private _startDrawing = false;
+
   constructor(
     private _svgSvc: SvgService,
     private _edgeDrawSvc: EdgeDrawingService
@@ -21,9 +23,27 @@ export class ConnectorDirective implements OnInit {
       this.connector.color = this.vertex.category.color;
   }
 
+  @HostListener('mousedown')
+  onMouseDown(): void {
+    if (!this._edgeDrawSvc.drawing) this._startDrawing = true;
+  }
+
   @HostListener('mouseup', ['$event'])
   onMouseUp(event: MouseEvent): void {
-    if (!this.vertex.readonly) {
+    if (this._startDrawing || this._edgeDrawSvc.drawing) {
+      this._edgeDrawSvc.renderLine(event, this.connector);
+      event.stopPropagation();
+    } 
+  }
+
+  @HostListener('mouseleave')
+  onMouseLeave(): void {
+    this._startDrawing = false;
+  }
+
+  @HostListener('mousemove', ['$event'])
+  onMouseMove(event: MouseEvent): void {
+    if (this._startDrawing) {
       this._edgeDrawSvc.renderLine(event, this.connector);
       event.stopPropagation();
     }

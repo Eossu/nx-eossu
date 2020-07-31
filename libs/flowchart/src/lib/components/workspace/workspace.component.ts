@@ -37,6 +37,7 @@ import { EdgeDrawingService } from '../../services/edge-drawing.service';
 import { Subscription } from 'rxjs';
 
 const keyCodes = {
+  ESC: 27,
   DELETE: 46,
 };
 
@@ -263,6 +264,8 @@ export class WorkspaceComponent
           };
         });
       }
+    } else if (event.keyCode === keyCodes.ESC) {
+      if (this._edgeDrawSvc.drawing) this._edgeDrawSvc.cancleDrawing();
     }
   }
 

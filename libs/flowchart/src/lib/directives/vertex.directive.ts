@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { IVertex, ICordinates, IConnector } from '../flowchart.interfaces';
 import { SvgService } from '../services/svg.service';
-import { colorLuminance } from '../color.helpers';
+import { colorLuminance } from '../utils/color.helpers';
 import { VertexType, ConnectorType } from '../flowchart.enums';
 import { SelectEvent } from '../flowchart.events';
 

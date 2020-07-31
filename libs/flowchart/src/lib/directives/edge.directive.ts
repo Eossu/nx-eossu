@@ -10,7 +10,7 @@ import {
 
 import { IEdge, ICordinates } from '../flowchart.interfaces';
 import { SelectEvent } from '../flowchart.events';
-import { colorLuminance } from '../color.helpers';
+import { colorLuminance } from '../utils/color.helpers';
 import { SvgService } from '../services/svg.service';
 import { LineStyle } from '../flowchart.enums';
 
