@@ -1,7 +1,18 @@
-import { Directive, Input, HostListener, Output, EventEmitter, OnInit } from '@angular/core';
-import { IEdge } from '../flowchart.interfaces';
+import {
+  Directive,
+  Input,
+  HostListener,
+  Output,
+  EventEmitter,
+  OnInit,
+  ElementRef,
+} from '@angular/core';
+
+import { IEdge, ICordinates } from '../flowchart.interfaces';
 import { SelectEvent } from '../flowchart.events';
 import { colorLuminance } from '../color.helpers';
+import { SvgService } from '../services/svg.service';
+import { LineStyle } from '../flowchart.enums';
 
 @Directive({
   selector: '[eossuFcEdge]',
@@ -12,13 +23,13 @@ export class EdgeDirective implements OnInit {
   @Output() selected = new EventEmitter<SelectEvent>();
 
   private _originalColor: string;
-  private readonly _lumChange = 0.12;
+  private readonly _lumChange = 0.5;
 
-  constructor() {}
+  constructor(private _svgSvc: SvgService) {}
 
   ngOnInit(): void {
     if (!this.edge.color) {
-      this.edge.color = '#fff';
+      this.edge.color = '#d5bac8';
     }
   }
 
@@ -27,8 +38,20 @@ export class EdgeDirective implements OnInit {
     this.changeFillColor(true);
   }
 
+  render(pt1: ICordinates, pt2: ICordinates, lineStyle: LineStyle): void {
+    const d = this._svgSvc.drawSvgPathLine(pt1, pt2, lineStyle);
+    this.edge.d = d;
+  }
+
   @HostListener('click', ['$event'])
-  onClick($event: MouseEvent): void {}
+  onClick(event: MouseEvent): void {
+    this.edge.selected = !this.edge.selected;
+    this.changeFillColor(!this.edge.selected);
+
+    const selectedEvent = new SelectEvent('edge', this.edge.id, event.shiftKey);
+    this.selected.emit(selectedEvent);
+    event.stopPropagation();
+  }
 
   @HostListener('dbclick', ['$event'])
   onDbclick($event: MouseEvent): void {}
@@ -45,20 +68,16 @@ export class EdgeDirective implements OnInit {
   @HostListener('mouseleave', ['$event'])
   onMouseLeave($event: MouseEvent): void {}
 
-  @HostListener("mousemove", ["$event"])
+  @HostListener('mousemove', ['$event'])
   onMouseMove($event: MouseEvent): void {}
 
   private changeFillColor(original = false) {
     if (!this._originalColor) this._originalColor = this.edge.color;
 
     if (!original) {
-      this.edge.category.color = colorLuminance(
-        this._originalColor,
-        this._lumChange
-      );
+      this.edge.color = colorLuminance(this._originalColor, this._lumChange);
     } else {
       this.edge.color = this._originalColor;
     }
   }
-
 }

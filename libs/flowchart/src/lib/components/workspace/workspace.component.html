@@ -16,6 +16,7 @@
           eossuFcEdge
           [edge]="edge"
           [attr.id]="edge.id"
+          (selected)="onSelected($event)"
         >
           <ng-container
             *ngIf="edgeTemplate"
@@ -26,7 +27,9 @@
           <path
             *ngIf="!vertexTemplate"
             class="edge"
-            [attr.d]="getEdgeAttributeSvgD(edge)"
+            [attr.d]="edge.d"
+            [attr.stroke]="edge.color"
+            [attr.stroke-width]="'5'"
           ></path>
         </g>
       </g>
@@ -38,6 +41,7 @@
           [vertex]="vertex"
           [attr.id]="vertex.id"
           (selected)="onSelected($event)"
+          (moving)="onMoving()"
         >
           <ng-container
             *ngIf="vertexTemplate"
@@ -58,8 +62,8 @@
           />
         </g>
       </g>
-      <g>
-        <g class="connectors" *ngFor="let vertex of model.vertexs">
+      <g class="connectors">
+        <g *ngFor="let vertex of model.vertexs">
           <g
             *ngFor="let connector of vertex.connectors"
             eossuFcConnector

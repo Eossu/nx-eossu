@@ -20,7 +20,12 @@ export class SvgService {
    * @returns The SVGPoint
    */
   getSVGPoint(event: MouseEvent, element: SVGSVGElement): ICordinates {
-    const point = element.ownerSVGElement.createSVGPoint();
+    let point: SVGPoint;
+
+    if (element.ownerSVGElement)
+      point = element.ownerSVGElement.createSVGPoint();
+    else
+      point = element.createSVGPoint();
     point.x = event.x;
     point.y = event.y;
 
@@ -45,11 +50,11 @@ export class SvgService {
 
     if (style === LineStyle.Curved) {
       const tang = this.calculateTangent(pt1, pt2);
-      d += `C ${tang.source.x} ${tang.source.y} ${tang.dest.x} ${tang.dest.y} ${pt2.x} ${pt2.y}`;
+      d += `C ${tang.source.x } ${tang.source.y} ${tang.dest.x - 50} ${tang.dest.y} ${pt2.x} ${pt2.y} `;
     } else {
-      d += `L ${pt2.x} ${pt2.y}`;
+      d += `L ${pt2.x} ${pt2.y} `;
     }
-
+    
     return d;
   }
 

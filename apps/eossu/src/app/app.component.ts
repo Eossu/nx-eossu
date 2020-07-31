@@ -12,12 +12,12 @@ const vertexs: Array<IVertex> = [
     radius: 5,
     height: 80,
     width: 200,
-    category: { color: '#386e7d', name: 'General' },
+    category: { color: '#9597a8', name: 'General' },
     connectors: [
       { 
         id: uuidv4(),
         type: ConnectorType.Right,
-        radius: 8
+        radius: 5
       }
     ]
   },
@@ -34,12 +34,12 @@ const vertexs: Array<IVertex> = [
       { 
         id: uuidv4(),
         type: ConnectorType.Left,
-        radius: 8
+        radius: 5
       },
       { 
         id: uuidv4(),
         type: ConnectorType.Right,
-        radius: 8
+        radius: 5
       }
     ]
   },
@@ -56,12 +56,12 @@ const vertexs: Array<IVertex> = [
       { 
         id: uuidv4(),
         type: ConnectorType.Left,
-        radius: 8
+        radius: 5
       },
       { 
         id: uuidv4(),
         type: ConnectorType.Right,
-        radius: 8
+        radius: 5
       }
     ]
   },
@@ -73,12 +73,12 @@ const vertexs: Array<IVertex> = [
     radius: 5,
     height: 80,
     width: 200,
-    category: { color: '#386e7d', name: 'General' },
+    category: { color: '#9597a8', name: 'General' },
     connectors: [
       { 
         id: uuidv4(),
         type: ConnectorType.Left,
-        radius: 8
+        radius: 5
       }
     ]
   },

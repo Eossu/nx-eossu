@@ -6,7 +6,6 @@ import {
   ContentChild,
   TemplateRef,
   ChangeDetectionStrategy,
-  ViewEncapsulation,
   ElementRef,
   ViewChild,
   OnChanges,
@@ -17,6 +16,7 @@ import {
   AfterViewInit,
   Output,
   EventEmitter,
+  ChangeDetectorRef,
 } from '@angular/core';
 
 import {
@@ -33,6 +33,8 @@ import { LineStyle } from '../../flowchart.enums';
 import { SelectEvent } from '../../flowchart.events';
 import { VertexDirective } from '../../directives/vertex.directive';
 import { EdgeDirective } from '../../directives/edge.directive';
+import { EdgeDrawingService } from '../../services/edge-drawing.service';
+import { Subscription } from 'rxjs';
 
 const keyCodes = {
   DELETE: 46,
@@ -42,7 +44,6 @@ const keyCodes = {
   selector: 'eossu-fc-workspace',
   templateUrl: './workspace.component.html',
   styleUrls: ['./workspace.component.scss'],
-  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorkspaceComponent
@@ -67,8 +68,12 @@ export class WorkspaceComponent
   isPanning = false;
 
   private _selections = new Array<VertexDirective | EdgeDirective>();
+  private _subscriptions = new Subscription();
 
-  constructor(private _svgSrc: SvgService) {}
+  constructor(
+    private _svgSvc: SvgService,
+    private _edgeDrawSvc: EdgeDrawingService
+  ) {}
 
   ngOnInit(): void {
     if (!this.model) {
@@ -87,9 +92,34 @@ export class WorkspaceComponent
     }
   }
 
-  ngOnDestroy(): void {}
+  ngOnDestroy(): void {
+    this._subscriptions.unsubscribe();
+  }
 
-  ngAfterViewInit(): void {}
+  ngAfterViewInit(): void {
+    this._subscriptions.add(
+      this._edgeDrawSvc.newEdge$.subscribe((edge) => {
+        if (!edge) return;
+
+        this.model = {
+          vertexs: this.model.vertexs,
+          edges: [...this.model.edges, edge],
+        };
+      })
+    );
+
+    this._subscriptions.add(
+      this._edgeDrawSvc.cancle$.subscribe((edge) => {
+        const idx = this.model.edges.indexOf(edge);
+        this.model.edges.splice(idx, 1);
+
+        this.model = {
+          vertexs: this.model.vertexs,
+          edges: [...this.model.edges],
+        };
+      })
+    );
+  }
 
   ngOnChanges(changes: SimpleChanges): void {}
 
@@ -102,7 +132,6 @@ export class WorkspaceComponent
    */
   onSelected(event: SelectEvent): void {
     let directive: VertexDirective | EdgeDirective;
-
     if (event.type === 'vertex') {
       directive = this.vertexes.find((vertexDirective) => {
         return vertexDirective.vertex.id === event.id;
@@ -116,28 +145,27 @@ export class WorkspaceComponent
     if (event.key) {
       this._selections.push(directive);
     } else {
-      this.unSelect();
+      this.deselect();
       this._selections = [directive];
+      console.log(this._selections);
     }
   }
 
   /**
-   * Generate the path line D attribute data.
-   *
-   * @param edge The edge to be drawn.
+   * When a vertex is moving.
    */
-  getEdgeAttributeSvgD(edge: IEdge): string {
-    const source: ICordinates = this.getConnectorById(edge.source)
-    let dest: ICordinates = this.getVertexById(edge.destination);
-
-    if (!dest) dest = edge.endCord;
-
-    return this._svgSrc.drawSvgPathLine(source, dest, this.edgeStyle);
+  onMoving(): void {
+    this.edges.forEach((directive) => {
+      const source: ICordinates = this.getConnectorById(directive.edge.source);
+      let dest: ICordinates = this.getConnectorById(directive.edge.destination);
+      if (!dest) dest = directive.edge.endCord;
+      directive.render(source, dest, this.edgeStyle);
+    });
   }
 
   /**
    * Get the connector by the given id.
-   * 
+   *
    * @param id Id of the connector.
    */
   getConnectorById(id: string): IConnector {
@@ -179,8 +207,28 @@ export class WorkspaceComponent
    */
   @HostListener('click', ['$event'])
   onClick(event: MouseEvent) {
-    this.unSelect();
+    this.deselect();
     this._selections = [];
+  }
+
+  @HostListener('mouseup', ['$event'])
+  onMouseUp(event: MouseEvent): void {
+    if (this._edgeDrawSvc.drawing) {
+      this._edgeDrawSvc.renderLine(event);
+
+      // We should have selected above an connector. If not remove edge.
+      if (this._edgeDrawSvc.drawing) {
+        this._edgeDrawSvc.cancleDrawing();
+      }
+    }
+  }
+
+  @HostListener('mousemove', ['$event'])
+  onMouseMove(event: MouseEvent): void {
+    if (this._edgeDrawSvc.drawing) {
+      this._edgeDrawSvc.renderLine(event);
+      this.onMoving();
+    }
   }
 
   /**
@@ -201,8 +249,9 @@ export class WorkspaceComponent
             this.model.vertexs.splice(idx, 1);
             this.removedItem.emit(directive.vertex);
           } else if (directive instanceof EdgeDirective) {
+            console.log(directive);
             const idx = this.model.edges.indexOf(directive.edge);
-            this.model.edges.slice(idx, 1);
+            this.model.edges.splice(idx, 1);
             this.removedItem.emit(directive.edge);
           } else {
             return;
@@ -220,7 +269,7 @@ export class WorkspaceComponent
   /**
    * Helper method to do un-selection of models.
    */
-  private unSelect(): void {
+  private deselect(): void {
     if (this._selections.length > 0) {
       this._selections.forEach((someDirective) => {
         someDirective.deselect();

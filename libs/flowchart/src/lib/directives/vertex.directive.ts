@@ -20,6 +20,7 @@ export class VertexDirective implements OnInit {
   @Input() vertex: IVertex;
 
   @Output() selected = new EventEmitter<SelectEvent>();
+  @Output() moving = new EventEmitter();
 
   private _dragging = false;
   private _dragged = false;
@@ -27,7 +28,7 @@ export class VertexDirective implements OnInit {
   private _originalColor: string = '';
   private _leftMaxDrag = 0.0;
   private _topMaxDrag = 0.0;
-  private readonly _lumChange = 0.12;
+  private readonly _lumChange = 0.2;
 
   constructor(
     private _elementRef: ElementRef<SVGSVGElement>,
@@ -103,7 +104,6 @@ export class VertexDirective implements OnInit {
   @HostListener('mouseleave', ['$event'])
   onMouseLeave($event: MouseEvent): void {
     this._dragging = false;
-
     if (!this.vertex.selected) this.changeFillColor(true);
   }
 
@@ -117,6 +117,7 @@ export class VertexDirective implements OnInit {
       this.vertex.connectors.map((connector) => {
         this.calculateConnectorPosition(connector);
       });
+      this.moving.emit();
     }
   }
 
