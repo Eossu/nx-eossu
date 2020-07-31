@@ -53,7 +53,9 @@ export interface IEdge extends ID, ISelection {
   lable?: string;
   source?: string;
   destination?: string;
+  endCord?: ICordinates;
   active?: boolean;
+  color?: string;
   callbacks?: IUserCallbacks;
   [key: string]: any;
 }

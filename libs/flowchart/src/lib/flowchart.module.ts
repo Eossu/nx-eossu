@@ -8,9 +8,12 @@ import { VertexDirective } from './directives/vertex.directive';
 import { ConnectorDirective } from './directives/connector.directive';
 import { EdgeDirective } from './directives/edge.directive';
 
+import { EdgeDrawingService } from './services/edge-drawing.service';
 import { SvgService } from './services/svg.service';
+
 import { MagnetDirective } from './directives/magnet.directive';
 import { SvgPanZoomDirective } from './directives/svg-pan-zoom.directive';
+
 
 @NgModule({
   imports: [CommonModule],
@@ -23,7 +26,7 @@ import { SvgPanZoomDirective } from './directives/svg-pan-zoom.directive';
     MagnetDirective,
     SvgPanZoomDirective,
   ],
-  providers: [SvgService],
+  providers: [SvgService, EdgeDrawingService],
   exports: [WorkspaceComponent],
 })
 export class FlowchartModule {}

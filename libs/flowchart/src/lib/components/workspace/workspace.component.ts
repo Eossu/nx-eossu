@@ -18,13 +18,16 @@ import {
   Output,
   EventEmitter,
 } from '@angular/core';
+
 import {
   IEdge,
   IVertex,
   IWorkspaceModel,
   IView,
+  ICordinates,
+  IConnector,
 } from '../../flowchart.interfaces';
-import { Subscription } from 'rxjs';
+
 import { SvgService } from '../../services/svg.service';
 import { LineStyle } from '../../flowchart.enums';
 import { SelectEvent } from '../../flowchart.events';
@@ -63,26 +66,40 @@ export class WorkspaceComponent
 
   isPanning = false;
 
-  private _subscriptions = new Subscription();
   private _selections = new Array<VertexDirective | EdgeDirective>();
 
   constructor(private _svgSrc: SvgService) {}
 
   ngOnInit(): void {
+    if (!this.model) {
+      this.model = { vertexs: [], edges: [] };
+    }
     if (!this.edgeStyle) {
       this.edgeStyle = LineStyle.Curved;
     }
+
+    if (!this.minimap) {
+      this.minimap = false;
+    }
+
+    if (!this.view) {
+      this.view = { height: '100%', width: '100%' };
+    }
   }
 
-  ngOnDestroy(): void {
-    this._subscriptions.unsubscribe();
-    this._subscriptions = null;
-  }
+  ngOnDestroy(): void {}
 
   ngAfterViewInit(): void {}
 
   ngOnChanges(changes: SimpleChanges): void {}
 
+  /**
+   * Select the given model if key has been set in the event multiple
+   * selection is activated. Else all other selection is un-selected and
+   * only the given model is higlited as selected.
+   *
+   * @param event The selection event.
+   */
   onSelected(event: SelectEvent): void {
     let directive: VertexDirective | EdgeDirective;
 
@@ -110,13 +127,25 @@ export class WorkspaceComponent
    * @param edge The edge to be drawn.
    */
   getEdgeAttributeSvgD(edge: IEdge): string {
-    const sourceVertex = this.getVertexById(edge.source);
-    const destVertex = this.getVertexById(edge.destination);
-    return this._svgSrc.drawSvgPathLine(
-      sourceVertex,
-      destVertex,
-      this.edgeStyle
-    );
+    const source: ICordinates = this.getConnectorById(edge.source)
+    let dest: ICordinates = this.getVertexById(edge.destination);
+
+    if (!dest) dest = edge.endCord;
+
+    return this._svgSrc.drawSvgPathLine(source, dest, this.edgeStyle);
+  }
+
+  /**
+   * Get the connector by the given id.
+   * 
+   * @param id Id of the connector.
+   */
+  getConnectorById(id: string): IConnector {
+    for (const vertex of this.model.vertexs) {
+      for (const connector of vertex.connectors) {
+        if (connector.id === id) return connector;
+      }
+    }
   }
 
   /**
@@ -143,12 +172,22 @@ export class WorkspaceComponent
     });
   }
 
+  /**
+   * Handles click event on the workspace.
+   *
+   * @param event MouseEvent
+   */
   @HostListener('click', ['$event'])
   onClick(event: MouseEvent) {
     this.unSelect();
     this._selections = [];
   }
 
+  /**
+   * Handles keyboard events from the window.
+   *
+   * @param event KeyboardEvent
+   */
   @HostListener('window:keyup', ['$event'])
   onKeyUp(event: KeyboardEvent): void {
     if (event.keyCode === keyCodes.DELETE) {
@@ -178,10 +217,13 @@ export class WorkspaceComponent
     }
   }
 
+  /**
+   * Helper method to do un-selection of models.
+   */
   private unSelect(): void {
     if (this._selections.length > 0) {
       this._selections.forEach((someDirective) => {
-        someDirective.unSelect();
+        someDirective.deselect();
       });
     }
   }

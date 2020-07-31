@@ -27,7 +27,6 @@ export class VertexDirective implements OnInit {
   private _originalColor: string = '';
   private _leftMaxDrag = 0.0;
   private _topMaxDrag = 0.0;
-
   private readonly _lumChange = 0.12;
 
   constructor(
@@ -46,15 +45,19 @@ export class VertexDirective implements OnInit {
       this.calculateConnectorPosition(connector);
     });
 
+    if (this.vertex.readonly === undefined) {
+      this.vertex.readonly = false;
+    }
+
     this.vertex.selected = false;
 
     this._leftMaxDrag = this.vertex.border.width;
     this._topMaxDrag = this.vertex.border.width;
   }
 
-  unSelect(): void {
+  deselect(): void {
     this.vertex.selected = false;
-    this.changeBackgroundColor(true);
+    this.changeFillColor(true);
   }
 
   @HostListener('click', ['$event'])
@@ -65,7 +68,7 @@ export class VertexDirective implements OnInit {
     }
 
     this.vertex.selected = !this.vertex.selected;
-    this.changeBackgroundColor(!this.vertex.selected);
+    this.changeFillColor(!this.vertex.selected);
 
     const selectedEvent = new SelectEvent(
       'vertex',
@@ -81,6 +84,7 @@ export class VertexDirective implements OnInit {
     if (!this.vertex.readonly) {
       this.calculateMouseOffset(event);
       this._dragging = true;
+      event.stopPropagation();
     }
   }
 
@@ -92,7 +96,7 @@ export class VertexDirective implements OnInit {
   @HostListener('mouseenter', ['$event'])
   onMouseEnter($event: MouseEvent): void {
     if (!this.vertex.readonly) {
-      this.changeBackgroundColor();
+      this.changeFillColor();
     }
   }
 
@@ -100,7 +104,7 @@ export class VertexDirective implements OnInit {
   onMouseLeave($event: MouseEvent): void {
     this._dragging = false;
 
-    if (!this.vertex.selected) this.changeBackgroundColor(true);
+    if (!this.vertex.selected) this.changeFillColor(true);
   }
 
   @HostListener('mousemove', ['$event'])
@@ -116,7 +120,7 @@ export class VertexDirective implements OnInit {
     }
   }
 
-  private changeBackgroundColor(original = false) {
+  private changeFillColor(original = false) {
     if (!this._originalColor) this._originalColor = this.vertex.category.color;
 
     if (!original) {
