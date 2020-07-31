@@ -60,6 +60,15 @@
             [attr.stroke]="vertex.border.color"
             [attr.stroke-width]="vertex.border.width"
           />
+          <text
+            [attr.x]="vertex.x + vertex.width / 2"
+            [attr.y]="vertex.y + (vertex.height / 2) + 5"
+            [attr.fill]="'#000'"
+            alignment-baseline="middle"
+            text-anchor="middle"
+          >
+            {{ vertex.title }}
+          </text>
         </g>
       </g>
       <g class="connectors">

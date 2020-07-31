@@ -6,12 +6,13 @@ import { v4 as uuidv4 } from 'uuid';
 const vertexs: Array<IVertex> = [
   {
     id: uuidv4(),
+    title: 'Input',
     type: VertexType.Rectangle,
     x: 100,
     y: 200,
     radius: 5,
     height: 80,
-    width: 200,
+    width: 180,
     category: { color: '#9597a8', name: 'General' },
     connectors: [
       { 
@@ -23,6 +24,7 @@ const vertexs: Array<IVertex> = [
   },
   {
     id: uuidv4(),
+    title: 'Aggregate',
     type: VertexType.Rectangle,
     x: 620,
     y: 100,
@@ -45,6 +47,7 @@ const vertexs: Array<IVertex> = [
   },
   {
     id: uuidv4(),
+    title: 'Log',
     type: VertexType.Rectangle,
     x: 620,
     y: 300,
@@ -67,6 +70,7 @@ const vertexs: Array<IVertex> = [
   },
   {
     id: uuidv4(),
+    title: 'Storage',
     type: VertexType.Rectangle,
     x: 1150,
     y: 200,
