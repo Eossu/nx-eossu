@@ -34,6 +34,13 @@
     },
     "flowchart": {
       "tags": []
+    },
+    "eossu-site": {
+      "tags": []
+    },
+    "eossu-site-e2e": {
+      "tags": [],
+      "implicitDependencies": ["eossu-site"]
     }
   }
 }
