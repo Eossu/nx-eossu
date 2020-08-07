@@ -7,9 +7,10 @@ import { v4 as uuid4 } from 'uuid';
 @Injectable()
 export class EdgeDrawingService {
   private cancleSubject$ = new Subject<IEdge>();
+  cancle$ = this.cancleSubject$.asObservable();
+
   private newEdgeSubject$ = new BehaviorSubject<IEdge>(null);
   newEdge$ = this.newEdgeSubject$.asObservable();
-  cancle$ = this.cancleSubject$.asObservable();
 
   private _drawing = false;
 

@@ -24,7 +24,7 @@ import {
   IVertex,
   IWorkspaceModel,
   IView,
-  ICordinates,
+  IPoint2D,
   IConnector,
 } from '../../flowchart.interfaces';
 
@@ -156,8 +156,8 @@ export class WorkspaceComponent
    */
   onMoving(): void {
     this.edges.forEach((directive) => {
-      const source: ICordinates = this.getConnectorById(directive.edge.source);
-      let dest: ICordinates = this.getConnectorById(directive.edge.destination);
+      const source: IPoint2D = this.getConnectorById(directive.edge.source);
+      let dest: IPoint2D = this.getConnectorById(directive.edge.destination);
       if (!dest) dest = directive.edge.endCord;
       directive.render(source, dest, this.edgeStyle);
     });

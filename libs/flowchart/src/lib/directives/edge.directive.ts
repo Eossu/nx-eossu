@@ -8,7 +8,7 @@ import {
   ElementRef,
 } from '@angular/core';
 
-import { IEdge, ICordinates } from '../flowchart.interfaces';
+import { IEdge, IPoint2D } from '../flowchart.interfaces';
 import { SelectEvent } from '../flowchart.events';
 import { colorLuminance } from '../utils/color.helpers';
 import { SvgService } from '../services/svg.service';
@@ -38,7 +38,7 @@ export class EdgeDirective implements OnInit {
     this.changeFillColor(true);
   }
 
-  render(pt1: ICordinates, pt2: ICordinates, lineStyle: LineStyle): void {
+  render(pt1: IPoint2D, pt2: IPoint2D, lineStyle: LineStyle): void {
     const d = this._svgSvc.drawSvgPathLine(pt1, pt2, lineStyle);
     this.edge.d = d;
   }

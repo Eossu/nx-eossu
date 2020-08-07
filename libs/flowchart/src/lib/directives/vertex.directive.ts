@@ -7,7 +7,7 @@ import {
   Output,
   EventEmitter,
 } from '@angular/core';
-import { IVertex, ICordinates, IConnector } from '../flowchart.interfaces';
+import { IVertex, IPoint2D, IConnector } from '../flowchart.interfaces';
 import { SvgService } from '../services/svg.service';
 import { colorLuminance } from '../utils/color.helpers';
 import { VertexType, ConnectorType } from '../flowchart.enums';
@@ -24,7 +24,7 @@ export class VertexDirective implements OnInit {
 
   private _dragging = false;
   private _dragged = false;
-  private _offset: ICordinates = { x: 0.0, y: 0.0 };
+  private _offset: IPoint2D = { x: 0.0, y: 0.0 };
   private _originalColor: string = '';
   private _leftMaxDrag = 0.0;
   private _topMaxDrag = 0.0;
@@ -37,11 +37,11 @@ export class VertexDirective implements OnInit {
 
   ngOnInit(): void {
     if (!this.vertex.border)
-      this.vertex.border = { width: 1, color: colorLuminance('#fff', 0.12) };
+      this.vertex.border = { width: 1, color: colorLuminance(this.vertex.category.color, -0.3) };
 
     this.vertex.connectors.map((connector) => {
       if (!connector.border)
-        connector.border = { width: 1, color: colorLuminance('#fff', 0.12) };
+        connector.border = { width: 1, color: colorLuminance(this.vertex.category.color, -0.3) };
 
       this.calculateConnectorPosition(connector);
     });
