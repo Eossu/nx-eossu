@@ -1,15 +1,20 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { IEdge, IConnector } from '../flowchart.interfaces';
+import { IEdge, IConnector, IPoint2D } from '../flowchart.interfaces';
 import { SvgService } from './svg.service';
 import { v4 as uuid4 } from 'uuid';
+import { RenderEvent } from '../flowchart.events';
 
 @Injectable()
 export class EdgeDrawingService {
-  private cancleSubject$ = new Subject<IEdge>();
-  private newEdgeSubject$ = new BehaviorSubject<IEdge>(null);
+  private cancelSubject$ = new Subject<IEdge>();
+  cancel$ = this.cancelSubject$.asObservable();
+
+  private newEdgeSubject$ = new BehaviorSubject<IEdge>(undefined);
   newEdge$ = this.newEdgeSubject$.asObservable();
-  cancle$ = this.cancleSubject$.asObservable();
+
+  private renderSubject$ = new Subject<RenderEvent>();
+  render$ = this.renderSubject$.asObservable();
 
   private _drawing = false;
 
@@ -30,7 +35,7 @@ export class EdgeDrawingService {
   }
 
   /**
-   * Start to render a new edgge line and continue drawing while drawing is
+   * Start to render a new edge line and continue drawing while drawing is
    * activated.
    * 
    * @param event Mouse event
@@ -52,7 +57,7 @@ export class EdgeDrawingService {
    */
   cancelDrawing(): void {
     this._drawing = false;
-    this.cancleSubject$.next(this.edge);
+    this.cancelSubject$.next(this.edge);
   }
 
   /**

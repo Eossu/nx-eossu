@@ -7,11 +7,13 @@ import {
   Output,
   EventEmitter,
 } from '@angular/core';
-import { IVertex, ICordinates, IConnector } from '../flowchart.interfaces';
+
+import { IVertex, IPoint2D, IConnector } from '../flowchart.interfaces';
 import { SvgService } from '../services/svg.service';
 import { colorLuminance } from '../utils/color.helpers';
 import { VertexType, ConnectorType } from '../flowchart.enums';
 import { SelectEvent } from '../flowchart.events';
+import { DragService } from '../services/drag.service';
 
 @Directive({
   selector: '[eossuFcVertex]',
@@ -24,7 +26,7 @@ export class VertexDirective implements OnInit {
 
   private _dragging = false;
   private _dragged = false;
-  private _offset: ICordinates = { x: 0.0, y: 0.0 };
+  private _offset: IPoint2D = { x: 0.0, y: 0.0 };
   private _originalColor: string = '';
   private _leftMaxDrag = 0.0;
   private _topMaxDrag = 0.0;
@@ -32,6 +34,7 @@ export class VertexDirective implements OnInit {
 
   constructor(
     private _elementRef: ElementRef<SVGSVGElement>,
+    private _dragSvc: DragService,
     private _svgSvc: SvgService
   ) {}
 
@@ -55,6 +58,8 @@ export class VertexDirective implements OnInit {
     this._leftMaxDrag = this.vertex.border.width;
     this._topMaxDrag = this.vertex.border.width;
   }
+
+  render(): void {}
 
   deselect(): void {
     this.vertex.selected = false;

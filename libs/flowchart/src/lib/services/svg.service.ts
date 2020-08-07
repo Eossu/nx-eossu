@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { ICordinates } from '../flowchart.interfaces';
+import { IPoint2D } from '../flowchart.interfaces';
 import { LineStyle } from '../flowchart.enums';
 
 interface ITangnet {
-  source: ICordinates;
-  dest: ICordinates;
+  source: IPoint2D;
+  dest: IPoint2D;
 }
 
 @Injectable()
@@ -19,7 +19,7 @@ export class SvgService {
    *
    * @returns The SVGPoint
    */
-  getSVGPoint(event: MouseEvent | ICordinates, element: EventTarget): ICordinates {
+  getSVGPoint(event: MouseEvent | IPoint2D, element: EventTarget): IPoint2D {
     let point: SVGPoint;
 
     const target = element as SVGSVGElement;
@@ -43,15 +43,15 @@ export class SvgService {
    * @param style Style of the line
    */
   drawSvgPathLine(
-    pt1: ICordinates,
-    pt2: ICordinates,
+    pt1: IPoint2D,
+    pt2: IPoint2D,
     style: LineStyle
   ): string {
     let d = `M ${pt1.x} ${pt1.y} `;
 
     if (style === LineStyle.Curved) {
       const tang = this.calculateTangent(pt1, pt2);
-      d += `C ${tang.source.x } ${tang.source.y} ${tang.dest.x - 50} ${tang.dest.y} ${pt2.x} ${pt2.y} `;
+      d += `C ${tang.source.x } ${tang.source.y} ${tang.dest.x - 70} ${tang.dest.y} ${pt2.x} ${pt2.y} `;
     } else {
       d += `L ${pt2.x} ${pt2.y} `;
     }
@@ -59,17 +59,17 @@ export class SvgService {
     return d;
   }
 
-  private calculateTangentOffset(pt1: ICordinates, pt2: ICordinates): number {
+  private calculateTangentOffset(pt1: IPoint2D, pt2: IPoint2D): number {
     return (pt2.y - pt1.y) / 2;
   }
 
-  private calculateTangent(pt1: ICordinates, pt2: ICordinates): ITangnet {
-    const source: ICordinates = {
+  private calculateTangent(pt1: IPoint2D, pt2: IPoint2D): ITangnet {
+    const source: IPoint2D = {
       x: pt1.x,
       y: pt1.y + this.calculateTangentOffset(pt1, pt2),
     };
 
-    const dest: ICordinates = {
+    const dest: IPoint2D = {
       x: pt2.x,
       y: pt2.y - this.calculateTangentOffset(pt1, pt2),
     };

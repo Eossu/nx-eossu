@@ -15,6 +15,7 @@
           *ngFor="let edge of model.edges"
           eossuFcEdge
           [edge]="edge"
+          [lineStyle]="edgeStyle"
           [attr.id]="edge.id"
           (selected)="onSelected($event)"
         >

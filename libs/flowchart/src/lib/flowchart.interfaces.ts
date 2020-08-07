@@ -8,7 +8,7 @@ export interface ISelection {
   selected?: boolean;
 }
 
-export interface ICordinates {
+export interface IPoint2D {
   x?: number;
   y?: number;
 }
@@ -36,7 +36,7 @@ export interface IBorder {
   width: number;
 }
 
-export interface IConnector extends ID, IDimension, ICordinates {
+export interface IConnector extends ID, IDimension, IPoint2D {
   type: ConnectorType;
   color?: string;
   border?: IBorder;
@@ -44,7 +44,7 @@ export interface IConnector extends ID, IDimension, ICordinates {
   [key: string]: any;
 }
 
-export interface IVertex extends ID, ICordinates, IDimension, ISelection {
+export interface IVertex extends ID, IPoint2D, IDimension, ISelection {
   type?: VertexType;
   title?: string;
   connectors?: Array<IConnector>;
@@ -59,7 +59,7 @@ export interface IEdge extends ID, ISelection {
   lable?: string;
   source?: string;
   destination?: string;
-  endCord?: ICordinates;
+  endCord?: IPoint2D;
   active?: boolean;
   color?: string;
   callbacks?: IUserCallbacks;

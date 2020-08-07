@@ -8,12 +8,9 @@ import {
   ChangeDetectionStrategy,
   ElementRef,
   ViewChild,
-  OnChanges,
-  SimpleChanges,
   HostListener,
   ViewChildren,
   QueryList,
-  AfterViewInit,
   Output,
   EventEmitter,
 } from '@angular/core';
@@ -23,17 +20,19 @@ import {
   IVertex,
   IWorkspaceModel,
   IView,
-  ICordinates,
+  IPoint2D,
   IConnector,
 } from '../../flowchart.interfaces';
 
-import { SvgService } from '../../services/svg.service';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
+
 import { LineStyle } from '../../flowchart.enums';
 import { SelectEvent } from '../../flowchart.events';
 import { VertexDirective } from '../../directives/vertex.directive';
 import { EdgeDirective } from '../../directives/edge.directive';
 import { EdgeDrawingService } from '../../services/edge-drawing.service';
-import { Subscription } from 'rxjs';
+import { DragService } from '../../services/drag.service';
 
 const keyCodes = {
   ESC: 27,
@@ -47,7 +46,7 @@ const keyCodes = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorkspaceComponent
-  implements OnInit, OnDestroy, OnChanges, AfterViewInit {
+  implements OnInit, OnDestroy {
   @Input() model: IWorkspaceModel;
   @Input() edgeStyle: LineStyle;
   @Input() minimap: boolean;
@@ -70,7 +69,7 @@ export class WorkspaceComponent
   private _selections = new Array<VertexDirective | EdgeDirective>();
   private _subscriptions = new Subscription();
 
-  constructor(private _edgeDrawSvc: EdgeDrawingService) {}
+  constructor(private _edgeDrawSvc: EdgeDrawingService, private _dragSvc: DragService) {}
 
   ngOnInit(): void {
     if (!this.model) {
@@ -87,17 +86,11 @@ export class WorkspaceComponent
     if (!this.view) {
       this.view = { height: '100%', width: '100%' };
     }
-  }
 
-  ngOnDestroy(): void {
-    this._subscriptions.unsubscribe();
-  }
-
-  ngAfterViewInit(): void {
     this._subscriptions.add(
-      this._edgeDrawSvc.newEdge$.subscribe((edge) => {
-        if (!edge) return;
-
+      this._edgeDrawSvc.newEdge$.pipe(
+        filter(edge => edge !== undefined)
+      ).subscribe((edge) => {
         this.model = {
           vertexs: this.model.vertexs,
           edges: [...this.model.edges, edge],
@@ -106,7 +99,7 @@ export class WorkspaceComponent
     );
 
     this._subscriptions.add(
-      this._edgeDrawSvc.cancle$.subscribe((edge) => {
+      this._edgeDrawSvc.cancel$.subscribe((edge) => {
         const idx = this.model.edges.indexOf(edge);
         this.model.edges.splice(idx, 1);
 
@@ -118,7 +111,9 @@ export class WorkspaceComponent
     );
   }
 
-  ngOnChanges(changes: SimpleChanges): void {}
+  ngOnDestroy(): void {
+    this._subscriptions.unsubscribe();
+  }
 
   /**
    * Select the given model if key has been set in the event multiple
@@ -152,10 +147,11 @@ export class WorkspaceComponent
    */
   onMoving(): void {
     this.edges.forEach((directive) => {
-      const source: ICordinates = this.getConnectorById(directive.edge.source);
-      let dest: ICordinates = this.getConnectorById(directive.edge.destination);
+      let source: IPoint2D = this.getConnectorById(directive.edge.source);
+      let dest: IPoint2D = this.getConnectorById(directive.edge.destination);
+      if (!source) source = directive.edge.endCord;
       if (!dest) dest = directive.edge.endCord;
-      directive.render(source, dest, this.edgeStyle);
+      directive.render(source, dest);
     });
   }
 
@@ -223,6 +219,8 @@ export class WorkspaceComponent
       if (this._edgeDrawSvc.drawing) {
         this._edgeDrawSvc.cancelDrawing();
       }
+    } else if (this._dragSvc.dragging) {
+      return; // FIXME: We need to either put the item where its dragged on cancel and put back to original position (Edge).
     }
   }
 
@@ -239,6 +237,8 @@ export class WorkspaceComponent
     if (this._edgeDrawSvc.drawing) {
       this._edgeDrawSvc.renderLine(event);
       this.onMoving();
+    } else if (this._dragSvc.dragging) {
+      this._dragSvc.dragElement(event);
     }
   }
 
