@@ -13,7 +13,7 @@ export abstract class AbstractDragService<T extends IPoint2D> {
   private _leftMaxDrag = 0.0;
   private _topMaxDrag = 0.0;
 
-  constructor(private _svgSvc: SvgService) {}
+  constructor(protected _svgSvc: SvgService) {}
 
   drag(event: MouseEvent, element: T) {
     if (!this._dragging) {
