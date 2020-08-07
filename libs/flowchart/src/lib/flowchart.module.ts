@@ -14,7 +14,6 @@ import { SvgService } from './services/svg.service';
 import { MagnetDirective } from './directives/magnet.directive';
 import { SvgPanZoomDirective } from './directives/svg-pan-zoom.directive';
 
-
 @NgModule({
   imports: [CommonModule],
   declarations: [

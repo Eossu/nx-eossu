@@ -16,7 +16,6 @@ import {
   AfterViewInit,
   Output,
   EventEmitter,
-  ChangeDetectorRef,
 } from '@angular/core';
 
 import {
