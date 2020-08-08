@@ -1,8 +1,7 @@
-<section>
-  <h1>Header</h1>
-  <p>
-    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quasi, magni.
-    Blanditiis fuga dolore commodi enim perferendis sapiente minima debitis
-    nisi.
-  </p>
-</section>
+<article class="timeline-item-card">
+  <header>
+    <ng-content select="timeline-item-dot"></ng-content>
+    <ng-content select="timeline-item-header"></ng-content>
+  </header>
+  <ng-content select="timeline-item-content"></ng-content>
+</article>
