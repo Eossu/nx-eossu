@@ -22,6 +22,7 @@ import {
   IView,
   IPoint2D,
   IConnector,
+  ISelectable,
 } from '../../flowchart.interfaces';
 
 import { LineStyle } from '../../flowchart.enums';
@@ -63,7 +64,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
   @ViewChild('workspaceBoard') workspaceBoard: ElementRef<SVGSVGElement>;
 
-  private _selections = new Array<VertexDirective | EdgeDirective>();
+  private _selections = new Array<ISelectable>();
   private _subscriptions = new Subscription();
 
   constructor(
@@ -114,33 +115,6 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this._subscriptions.unsubscribe();
-  }
-
-  /**
-   * Select the given model if key has been set in the event multiple
-   * selection is activated. Else all other selection is un-selected and
-   * only the given model is higlited as selected.
-   *
-   * @param event The selection event.
-   */
-  onSelected(event: SelectEvent): void {
-    let directive: VertexDirective | EdgeDirective;
-    if (event.type === 'vertex') {
-      directive = this.vertexes.find((vertexDirective) => {
-        return vertexDirective.model.id === event.id;
-      });
-    } else {
-      directive = this.edges.find((edgeDirective) => {
-        return edgeDirective.model.id === event.id;
-      });
-    }
-
-    if (event.key) {
-      this._selections.push(directive);
-    } else {
-      this.deselect();
-      this._selections = [directive];
-    }
   }
 
   /**
@@ -199,15 +173,13 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
    */
   @HostListener('click', ['$event'])
   onClick(event: MouseEvent) {
+    if (!event.shiftKey) this.deselect();
+
     const target = event.target as SVGSVGElement;
     const type = target.parentElement.getAttribute('type');
     const id = target.parentElement.getAttribute('id');
 
-    if (this._dragSvc.dragging) {
-      this._dragSvc.finishDrag(event);
-      event.stopPropagation();
-      return;
-    } else if (this._edgeDrawSvc.drawing && type === 'connector') {
+    if (this._edgeDrawSvc.drawing && type === 'connector') {
       const connector = this.connectors.find((con) => con.id === id);
       this._edgeDrawSvc.drawLine(event, connector.model);
       event.stopPropagation();
@@ -219,10 +191,31 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
       this._edgeDrawSvc.drawLine(event, connector.model);
       event.stopPropagation();
       return;
-    }
+    } else if (type === 'vertex') {
+      const vertex = this.vertexes.find((vertex) => vertex.id === id);
+      if (event.shiftKey) {
+        this._selections.push(vertex);
+      } else {
+        this.deselect();
+        this._selections = [vertex];
+      }
 
-    this.deselect();
-    this._selections = [];
+      vertex.select();
+      event.stopPropagation();
+      return;
+    } else if (type === 'edge') {
+      const edge = this.edges.find((edge) => edge.id === id);
+
+      if (event.shiftKey) {
+        this._selections.push(edge);
+      } else {
+        this._selections = [edge];
+      }
+
+      edge.select();
+      event.stopPropagation();
+      return;
+    }
   }
 
   @HostListener('mousedown', ['$event'])
@@ -307,6 +300,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
       }
     } else if (event.keyCode === keyCodes.ESC) {
       if (this._edgeDrawSvc.drawing) this._edgeDrawSvc.cancleDrawing();
+      else if (this._selections.length > 0) this.deselect();
     }
   }
 
@@ -318,6 +312,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
       this._selections.forEach((someDirective) => {
         someDirective.deselect();
       });
+      this._selections = [];
     }
   }
 }

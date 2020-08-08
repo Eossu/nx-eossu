@@ -62,8 +62,6 @@ export class VertexDirective implements OnInit, IDraggable, ISelectable {
       this.model.readonly = false;
     }
 
-    this.model.selected = false;
-
     this._leftMaxDrag = this.model.border.width;
     this._topMaxDrag = this.model.border.width;
   }
@@ -98,9 +96,8 @@ export class VertexDirective implements OnInit, IDraggable, ISelectable {
    * Select this directive.
    */
   select(): void {
-    this.model.selected = !this.model.selected;
-    this.changeFillColor(!this.model.selected);
-    event.stopPropagation();
+    this.model.selected = true;
+    this.changeFillColor();
   }
 
   /**
@@ -108,7 +105,7 @@ export class VertexDirective implements OnInit, IDraggable, ISelectable {
    */
   @HostListener('mouseenter')
   onMouseEnter(): void {
-    if (!this.model.readonly) {
+    if (!this.model.readonly && !this.model.selected) {
       this.changeFillColor();
     }
   }

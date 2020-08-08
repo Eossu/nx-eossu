@@ -17,7 +17,6 @@
           [model]="edge"
           [attr.id]="edge.id"
           [attr.type]="'edge'"
-          (selected)="onSelected($event)"
         >
           <ng-container
             *ngIf="edgeTemplate"
@@ -42,7 +41,6 @@
           [model]="vertex"
           [attr.id]="vertex.id"
           [attr.type]="'vertex'"
-          (selected)="onSelected($event)"
           (moving)="onMoving()"
         >
           <ng-container
