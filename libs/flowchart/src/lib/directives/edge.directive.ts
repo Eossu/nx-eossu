@@ -1,10 +1,11 @@
-import {
-  Directive,
-  Input,
-  OnInit,
-} from '@angular/core';
+import { Directive, Input, OnInit } from '@angular/core';
 
-import { IEdge, IPoint2D, IDraggable, ISelectable } from '../flowchart.interfaces';
+import {
+  IEdge,
+  IPoint2D,
+  IDraggable,
+  ISelectable,
+} from '../flowchart.interfaces';
 import { colorLuminance } from '../utils/color.helpers';
 import { SvgService } from '../services/svg.service';
 import { LineStyle } from '../flowchart.enums';
@@ -38,7 +39,7 @@ export class EdgeDirective implements OnInit, IDraggable, ISelectable {
   }
 
   select(): void {
-    this.model.selected = true
+    this.model.selected = true;
     this.changeFillColor();
   }
 
