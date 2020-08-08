@@ -17,7 +17,8 @@
     "baseUrl": ".",
     "paths": {
       "@eossu/styles": ["libs/styles/src/index.ts"],
-      "@eossu/flowchart": ["libs/flowchart/src/index.ts"]
+      "@eossu/flowchart": ["libs/flowchart/src/index.ts"],
+      "@eossu/ui/timeline": ["libs/timeline/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

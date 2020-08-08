@@ -190,6 +190,50 @@
           "style": "scss"
         }
       }
+    },
+    "timeline": {
+      "projectType": "library",
+      "root": "libs/timeline",
+      "sourceRoot": "libs/timeline/src",
+      "prefix": "eossu",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/angular:package",
+          "options": {
+            "tsConfig": "libs/timeline/tsconfig.lib.json",
+            "project": "libs/timeline/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/timeline/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/timeline/tsconfig.lib.json",
+              "libs/timeline/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/timeline/**/*"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/timeline/jest.config.js",
+            "tsConfig": "libs/timeline/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "libs/timeline/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/angular:component": {
+          "style": "scss"
+        }
+      }
     }
   },
   "cli": {
