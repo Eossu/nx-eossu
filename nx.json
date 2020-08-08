@@ -37,6 +37,13 @@
     },
     "timeline": {
       "tags": []
+    },
+    "eossu-timeline": {
+      "tags": []
+    },
+    "eossu-timeline-e2e": {
+      "tags": [],
+      "implicitDependencies": ["eossu-timeline"]
     }
   }
 }
