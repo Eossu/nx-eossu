@@ -26,7 +26,6 @@ import {
 } from '../../flowchart.interfaces';
 
 import { LineStyle } from '../../flowchart.enums';
-import { SelectEvent } from '../../flowchart.events';
 import { VertexDirective } from '../../directives/vertex.directive';
 import { EdgeDirective } from '../../directives/edge.directive';
 import { EdgeDrawingService } from '../../services/edge-drawing.service';

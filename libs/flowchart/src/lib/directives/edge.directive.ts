@@ -1,15 +1,10 @@
 import {
   Directive,
   Input,
-  HostListener,
-  Output,
-  EventEmitter,
   OnInit,
-  ElementRef,
 } from '@angular/core';
 
 import { IEdge, IPoint2D, IDraggable, ISelectable } from '../flowchart.interfaces';
-import { SelectEvent } from '../flowchart.events';
 import { colorLuminance } from '../utils/color.helpers';
 import { SvgService } from '../services/svg.service';
 import { LineStyle } from '../flowchart.enums';
