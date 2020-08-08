@@ -79,3 +79,14 @@ export interface IUserCallbacks {
   mouseLeave?: (event: MouseEvent, model: IVertex | IEdge | IConnector) => void;
   mouseUp?: (event: MouseEvent, model: IVertex | IEdge | IConnector) => void;
 }
+
+export interface IDraggable {
+  readonly id: string;
+  onDragStart?: (event: MouseEvent) => void;
+  onDrag: (event: MouseEvent) => void;
+}
+
+export interface ISelectable {
+  select: () => void;
+  deselect: () => void;
+}

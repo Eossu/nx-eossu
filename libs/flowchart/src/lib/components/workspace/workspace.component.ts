@@ -8,12 +8,9 @@ import {
   ChangeDetectionStrategy,
   ElementRef,
   ViewChild,
-  OnChanges,
-  SimpleChanges,
   HostListener,
   ViewChildren,
   QueryList,
-  AfterViewInit,
   Output,
   EventEmitter,
 } from '@angular/core';
@@ -34,6 +31,8 @@ import { VertexDirective } from '../../directives/vertex.directive';
 import { EdgeDirective } from '../../directives/edge.directive';
 import { EdgeDrawingService } from '../../services/edge-drawing.service';
 import { Subscription } from 'rxjs';
+import { ConnectorDirective } from '../../directives/connector.directive';
+import { DragService } from '../../services/drag.service';
 
 const keyCodes = {
   ESC: 27,
@@ -46,11 +45,10 @@ const keyCodes = {
   styleUrls: ['./workspace.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WorkspaceComponent
-  implements OnInit, OnDestroy, OnChanges, AfterViewInit {
+export class WorkspaceComponent implements OnInit, OnDestroy {
   @Input() model: IWorkspaceModel;
   @Input() edgeStyle: LineStyle;
-  @Input() minimap: boolean;
+  @Input() minimap: boolean;  // TODO: Not implemented yet so is not used at the moment.
   @Input() view: IView;
 
   @Output() removedItem = new EventEmitter<IVertex | IEdge>();
@@ -62,16 +60,15 @@ export class WorkspaceComponent
 
   @ViewChildren(VertexDirective) vertexes: QueryList<VertexDirective>;
   @ViewChildren(EdgeDirective) edges: QueryList<EdgeDirective>;
+  @ViewChildren(ConnectorDirective) connectors: QueryList<ConnectorDirective>;
 
   @ViewChild('workspaceBoard') workspaceBoard: ElementRef<SVGSVGElement>;
-
-  isPanning = false;
 
   private _selections = new Array<VertexDirective | EdgeDirective>();
   private _subscriptions = new Subscription();
 
   constructor(
-    private _svgSvc: SvgService,
+    private _dragSvc: DragService,
     private _edgeDrawSvc: EdgeDrawingService
   ) {}
 
@@ -90,13 +87,8 @@ export class WorkspaceComponent
     if (!this.view) {
       this.view = { height: '100%', width: '100%' };
     }
-  }
 
-  ngOnDestroy(): void {
-    this._subscriptions.unsubscribe();
-  }
-
-  ngAfterViewInit(): void {
+    // Add Observable subscriptions for edge drawing.
     this._subscriptions.add(
       this._edgeDrawSvc.newEdge$.subscribe((edge) => {
         if (!edge) return;
@@ -121,7 +113,9 @@ export class WorkspaceComponent
     );
   }
 
-  ngOnChanges(changes: SimpleChanges): void {}
+  ngOnDestroy(): void {
+    this._subscriptions.unsubscribe();
+  }
 
   /**
    * Select the given model if key has been set in the event multiple
@@ -134,11 +128,11 @@ export class WorkspaceComponent
     let directive: VertexDirective | EdgeDirective;
     if (event.type === 'vertex') {
       directive = this.vertexes.find((vertexDirective) => {
-        return vertexDirective.vertex.id === event.id;
+        return vertexDirective.model.id === event.id;
       });
     } else {
       directive = this.edges.find((edgeDirective) => {
-        return edgeDirective.edge.id === event.id;
+        return edgeDirective.model.id === event.id;
       });
     }
 
@@ -146,7 +140,7 @@ export class WorkspaceComponent
       this._selections.push(directive);
     } else {
       this.deselect();
-      this._selections = [directive]; 
+      this._selections = [directive];
     }
   }
 
@@ -155,9 +149,9 @@ export class WorkspaceComponent
    */
   onMoving(): void {
     this.edges.forEach((directive) => {
-      const source: IPoint2D = this.getConnectorById(directive.edge.source);
-      let dest: IPoint2D = this.getConnectorById(directive.edge.destination);
-      if (!dest) dest = directive.edge.endCord;
+      const source: IPoint2D = this.getConnectorById(directive.model.source);
+      let dest: IPoint2D = this.getConnectorById(directive.model.destination);
+      if (!dest) dest = directive.model.endCord;
       directive.render(source, dest, this.edgeStyle);
     });
   }
@@ -206,12 +200,41 @@ export class WorkspaceComponent
    */
   @HostListener('click', ['$event'])
   onClick(event: MouseEvent) {
+    if (this._dragSvc.dragging) this._dragSvc.finishDrag(event);
+
     this.deselect();
     this._selections = [];
   }
 
+  @HostListener('mousedown', ['$event'])
+  onMouseDown(event: MouseEvent): void {
+    const target = event.target as SVGSVGElement;
+
+    const type = target.parentElement.getAttribute('type');
+    const id = target.parentElement.getAttribute('id');
+
+    if (type === 'vertex') {
+      const vertex = this.vertexes.find((vertex) => vertex.id === id);
+      const connectorsId: Array<string> = vertex.model.connectors.map(
+        (connector) => connector.id
+      );
+      const connectors = this.connectors.filter((connector) =>
+        connectorsId.some((id) => id === connector.id)
+      );
+      this._dragSvc.prepareDrag(event, [vertex, ...connectors]);
+    } else if (type === 'edge') {
+      const edge = this.edges.find((edge) => edge.id === id);
+      this._dragSvc.prepareDrag(event, [edge]);
+    } else if (type === 'connector') {
+      // If we are on a connector we will prepare for drawing an edge instead.
+      const connector = this.connectors.find((con) => con.id === id);
+    }
+  }
+
   @HostListener('mouseup', ['$event'])
   onMouseUp(event: MouseEvent): void {
+    if (this._dragSvc.dragging) this._dragSvc.finishDrag(event);
+
     if (this._edgeDrawSvc.drawing) {
       this._edgeDrawSvc.renderLine(event);
 
@@ -224,9 +247,20 @@ export class WorkspaceComponent
 
   @HostListener('mousemove', ['$event'])
   onMouseMove(event: MouseEvent): void {
+    if (this._dragSvc.dragging) {
+      this._dragSvc.onDrag(event);
+    }
+
     if (this._edgeDrawSvc.drawing) {
       this._edgeDrawSvc.renderLine(event);
       this.onMoving();
+    }
+  }
+
+  @HostListener('mouseleave', ['$event'])
+  onMouseLeave(event: MouseEvent): void {
+    if (this._dragSvc.dragging) {
+      this._dragSvc.finishDrag(event);
     }
   }
 
@@ -244,13 +278,13 @@ export class WorkspaceComponent
           let edges = this.model.edges;
 
           if (directive instanceof VertexDirective) {
-            const idx = this.model.vertexs.indexOf(directive.vertex);
+            const idx = this.model.vertexs.indexOf(directive.model);
             this.model.vertexs.splice(idx, 1);
-            this.removedItem.emit(directive.vertex);
+            this.removedItem.emit(directive.model);
           } else if (directive instanceof EdgeDirective) {
-            const idx = this.model.edges.indexOf(directive.edge);
+            const idx = this.model.edges.indexOf(directive.model);
             this.model.edges.splice(idx, 1);
-            this.removedItem.emit(directive.edge);
+            this.removedItem.emit(directive.model);
           } else {
             return;
           }

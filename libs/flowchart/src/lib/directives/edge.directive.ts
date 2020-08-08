@@ -8,7 +8,7 @@ import {
   ElementRef,
 } from '@angular/core';
 
-import { IEdge, IPoint2D } from '../flowchart.interfaces';
+import { IEdge, IPoint2D, IDraggable } from '../flowchart.interfaces';
 import { SelectEvent } from '../flowchart.events';
 import { colorLuminance } from '../utils/color.helpers';
 import { SvgService } from '../services/svg.service';
@@ -17,38 +17,46 @@ import { LineStyle } from '../flowchart.enums';
 @Directive({
   selector: '[eossuFcEdge]',
 })
-export class EdgeDirective implements OnInit {
-  @Input() edge: IEdge;
+export class EdgeDirective implements OnInit, IDraggable {
+  @Input() model: IEdge;
 
   @Output() selected = new EventEmitter<SelectEvent>();
 
   private _originalColor: string;
   private readonly _lumChange = 0.5;
 
+  get id(): string {
+    return this.model.id;
+  }
+
   constructor(private _svgSvc: SvgService) {}
 
   ngOnInit(): void {
-    if (!this.edge.color) {
-      this.edge.color = '#d5bac8';
+    if (!this.model.color) {
+      this.model.color = '#d5bac8';
     }
   }
 
+  onDragStart(): void {}
+
+  onDrag(event: MouseEvent): void {}
+
   deselect(): void {
-    this.edge.selected = false;
+    this.model.selected = false;
     this.changeFillColor(true);
   }
 
   render(pt1: IPoint2D, pt2: IPoint2D, lineStyle: LineStyle): void {
     const d = this._svgSvc.drawSvgPathLine(pt1, pt2, lineStyle);
-    this.edge.d = d;
+    this.model.d = d;
   }
 
   @HostListener('click', ['$event'])
   onClick(event: MouseEvent): void {
-    this.edge.selected = !this.edge.selected;
-    this.changeFillColor(!this.edge.selected);
+    this.model.selected = !this.model.selected;
+    this.changeFillColor(!this.model.selected);
 
-    const selectedEvent = new SelectEvent('edge', this.edge.id, event.shiftKey);
+    const selectedEvent = new SelectEvent('edge', this.model.id, event.shiftKey);
     this.selected.emit(selectedEvent);
     event.stopPropagation();
   }
@@ -72,12 +80,12 @@ export class EdgeDirective implements OnInit {
   onMouseMove($event: MouseEvent): void {}
 
   private changeFillColor(original = false) {
-    if (!this._originalColor) this._originalColor = this.edge.color;
+    if (!this._originalColor) this._originalColor = this.model.color;
 
     if (!original) {
-      this.edge.color = colorLuminance(this._originalColor, this._lumChange);
+      this.model.color = colorLuminance(this._originalColor, this._lumChange);
     } else {
-      this.edge.color = this._originalColor;
+      this.model.color = this._originalColor;
     }
   }
 }

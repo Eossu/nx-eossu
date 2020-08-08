@@ -14,9 +14,9 @@
         <g
           *ngFor="let edge of model.edges"
           eossuFcEdge
-          [edge]="edge"
+          [model]="edge"
           [attr.id]="edge.id"
-          [attr.type]="edge"
+          [attr.type]="'edge'"
           (selected)="onSelected($event)"
         >
           <ng-container
@@ -39,9 +39,9 @@
         <g
           *ngFor="let vertex of model.vertexs"
           eossuFcVertex
-          [vertex]="vertex"
+          [model]="vertex"
           [attr.id]="vertex.id"
-          [attr.type]="vertex"
+          [attr.type]="'vertex'"
           (selected)="onSelected($event)"
           (moving)="onMoving()"
         >
@@ -62,33 +62,32 @@
             [attr.stroke]="vertex.border.color"
             [attr.stroke-width]="vertex.border.width"
           />
-        </g>
-      </g>
-      <g class="connectors">
-        <g *ngFor="let vertex of model.vertexs">
-          <g
-            *ngFor="let connector of vertex.connectors"
-            eossuFcConnector
-            [connector]="connector"
-            [vertex]="vertex"
-            [attr.id]="connector.id"
-            [attr.type]="connector"
-          >
-            <ng-container
-              *ngIf="connectorTemplate"
-              [ngTemplateOutlet]="connectorTemplate"
-              [ngTemplateOutletContext]="{ $implicit: connector }"
-            ></ng-container>
 
-            <circle
-              *ngIf="!connectorTemplate"
-              [attr.cx]="connector.x"
-              [attr.cy]="connector.y"
-              [attr.r]="connector.radius"
-              [attr.fill]="connector.color"
-              [attr.stroke]="connector.border.color"
-              [attr.stroke-width]="connector.border.width"
-            />
+          <g class="connectors">
+            <g
+              *ngFor="let connector of vertex.connectors"
+              eossuFcConnector
+              [model]="connector"
+              [vertex]="vertex"
+              [attr.id]="connector.id"
+              [attr.type]="'connector'"
+            >
+              <ng-container
+                *ngIf="connectorTemplate"
+                [ngTemplateOutlet]="connectorTemplate"
+                [ngTemplateOutletContext]="{ $implicit: connector }"
+              ></ng-container>
+
+              <circle
+                *ngIf="!connectorTemplate"
+                [attr.cx]="connector.x"
+                [attr.cy]="connector.y"
+                [attr.r]="connector.radius"
+                [attr.fill]="connector.color"
+                [attr.stroke]="connector.border.color"
+                [attr.stroke-width]="connector.border.width"
+              />
+            </g>
           </g>
         </g>
       </g>

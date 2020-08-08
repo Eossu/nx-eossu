@@ -4,145 +4,161 @@ import {
   HostListener,
   ElementRef,
   OnInit,
-  Output,
-  EventEmitter,
 } from '@angular/core';
-import { IVertex, IPoint2D, IConnector } from '../flowchart.interfaces';
+
+import {
+  IVertex,
+  IPoint2D,
+  IDraggable,
+  ISelectable,
+} from '../flowchart.interfaces';
+
 import { SvgService } from '../services/svg.service';
 import { colorLuminance } from '../utils/color.helpers';
-import { VertexType, ConnectorType } from '../flowchart.enums';
-import { SelectEvent } from '../flowchart.events';
 
 @Directive({
   selector: '[eossuFcVertex]',
 })
-export class VertexDirective implements OnInit {
-  @Input() vertex: IVertex;
+export class VertexDirective implements OnInit, IDraggable, ISelectable {
+  @Input() model: IVertex;
 
-  @Output() selected = new EventEmitter<SelectEvent>();
-  @Output() moving = new EventEmitter();
-
-  private _dragging = false;
-  private _dragged = false;
-  private _offset: IPoint2D = { x: 0.0, y: 0.0 };
+  private _offset: IPoint2D;
   private _originalColor: string = '';
   private _leftMaxDrag = 0.0;
   private _topMaxDrag = 0.0;
   private readonly _lumChange = 0.2;
+
+  /**
+   * Get the ID this VertexDirective represents
+   */
+  get id(): string {
+    return this.model.id;
+  }
 
   constructor(
     private _elementRef: ElementRef<SVGSVGElement>,
     private _svgDragSvc: SvgService
   ) {}
 
+  /**
+   * Handles the initialization of the Angular Directive according to Angular Lifecycle events.
+   */
   ngOnInit(): void {
-    if (!this.vertex.border)
-      this.vertex.border = { width: 1, color: colorLuminance(this.vertex.category.color, -0.3) };
+    if (!this.model.border)
+      this.model.border = {
+        width: 1,
+        color: colorLuminance(this.model.category.color, -0.3),
+      };
 
-    this.vertex.connectors.map((connector) => {
+    this.model.connectors.map((connector) => {
       if (!connector.border)
-        connector.border = { width: 1, color: colorLuminance(this.vertex.category.color, -0.3) };
-
-      this.calculateConnectorPosition(connector);
+        connector.border = {
+          width: 1,
+          color: colorLuminance(this.model.category.color, -0.3),
+        };
     });
 
-    if (this.vertex.readonly === undefined) {
-      this.vertex.readonly = false;
+    if (this.model.readonly === undefined) {
+      this.model.readonly = false;
     }
 
-    this.vertex.selected = false;
+    this.model.selected = false;
 
-    this._leftMaxDrag = this.vertex.border.width;
-    this._topMaxDrag = this.vertex.border.width;
+    this._leftMaxDrag = this.model.border.width;
+    this._topMaxDrag = this.model.border.width;
   }
 
+  /**
+   * Prepare the element to be dragged.
+   * 
+   * @param event MouseEvent
+   */
+  onDragStart(event: MouseEvent): void {
+    this.calculateMouseOffset(event);
+  }
+
+  /**
+   * Triggered when this directive is beeing dragged.
+   *
+   * @param event MouseEvent
+   */
+  onDrag(event: MouseEvent): void {
+    this.calculateVertexPosition(event);
+  }
+
+  /**
+   * Deselect this directive.
+   */
   deselect(): void {
-    this.vertex.selected = false;
+    this.model.selected = false;
     this.changeFillColor(true);
   }
 
-  @HostListener('click', ['$event'])
-  onClick(event: MouseEvent): void {
-    if (this._dragged) {
-      this._dragged = false;
-      return;
-    }
-
-    this.vertex.selected = !this.vertex.selected;
-    this.changeFillColor(!this.vertex.selected);
-
-    const selectedEvent = new SelectEvent(
-      'vertex',
-      this.vertex.id,
-      event.shiftKey
-    );
-    this.selected.emit(selectedEvent);
+  /**
+   * Select this directive.
+   */
+  select(): void {
+    this.model.selected = !this.model.selected;
+    this.changeFillColor(!this.model.selected);
     event.stopPropagation();
   }
 
-  @HostListener('mousedown', ['$event'])
-  onMouseDown(event: MouseEvent): void {
-    if (!this.vertex.readonly) {
-      this.calculateMouseOffset(event);
-      this._dragging = true;
-      event.stopPropagation();
-    }
-  }
-
-  @HostListener('mouseup', ['$event'])
-  onMouseUp($event: MouseEvent): void {
-    this._dragging = false;
-  }
-
-  @HostListener('mouseenter', ['$event'])
-  onMouseEnter($event: MouseEvent): void {
-    if (!this.vertex.readonly) {
+  /**
+   * Handles the mouse enter event when fired.
+   */
+  @HostListener('mouseenter')
+  onMouseEnter(): void {
+    if (!this.model.readonly) {
       this.changeFillColor();
     }
   }
 
-  @HostListener('mouseleave', ['$event'])
-  onMouseLeave($event: MouseEvent): void {
-    this._dragging = false;
-    if (!this.vertex.selected) this.changeFillColor(true);
+  /**
+   * Handles the mouse leave event when fired.
+   */
+  @HostListener('mouseleave')
+  onMouseLeave(): void {
+    if (!this.model.selected) this.changeFillColor(true);
   }
 
-  @HostListener('mousemove', ['$event'])
-  onMouseMove(event: MouseEvent): void {
-    if (this._dragging) {
-      event.stopPropagation();
-      this._dragged = true;
-
-      this.calculateVertexPosition(event);
-      this.vertex.connectors.map((connector) => {
-        this.calculateConnectorPosition(connector);
-      });
-      this.moving.emit();
-    }
-  }
-
+  /**
+   * Helper method to handle color changes on the directive.
+   *
+   * @param original Set color to original if set to true.
+   */
   private changeFillColor(original = false) {
-    if (!this._originalColor) this._originalColor = this.vertex.category.color;
+    if (!this._originalColor) this._originalColor = this.model.category.color;
 
     if (!original) {
-      this.vertex.category.color = colorLuminance(
+      this.model.category.color = colorLuminance(
         this._originalColor,
         this._lumChange
       );
     } else {
-      this.vertex.category.color = this._originalColor;
+      this.model.category.color = this._originalColor;
     }
   }
 
+  /**
+   * Calculate the (x, y) offset from the cordinates on the element to the mouse
+   * pointer.
+   *
+   * @param event MouseEvent
+   */
   private calculateMouseOffset(event: MouseEvent): void {
     this._offset = this._svgDragSvc.getSVGPoint(
       event,
       this._elementRef.nativeElement
     );
-    this._offset.x -= this.vertex.x;
-    this._offset.y -= this.vertex.y;
+    this._offset.x -= this.model.x;
+    this._offset.y -= this.model.y;
   }
 
+  /**
+   * Calculate the new cordinates according to the mouse event.
+   *
+   * @param event MouseEvent
+   */
   private calculateVertexPosition(event: MouseEvent): void {
     const coord = this._svgDragSvc.getSVGPoint(
       event,
@@ -155,47 +171,7 @@ export class VertexDirective implements OnInit {
     if (x < this._leftMaxDrag) x = this._leftMaxDrag;
     if (y < this._topMaxDrag) y = this._topMaxDrag;
 
-    this.vertex.x = x;
-    this.vertex.y = y;
-
-    this.calculateMouseOffset(event);
-  }
-
-  private calculateConnectorPosition(connector: IConnector): void {
-    if (this.vertex.type === VertexType.Rectangle) {
-      if (connector.type === ConnectorType.Left) {
-        const center = this.vertex.height / 2;
-        connector.x = this.vertex.x;
-        connector.y = this.vertex.y + center;
-        this._leftMaxDrag = connector.border.width + connector.radius;
-      } else if (connector.type === ConnectorType.Top) {
-        const center = this.vertex.width / 2;
-        connector.x = this.vertex.x + center;
-        connector.y = this.vertex.y;
-        this._topMaxDrag = connector.border.width + connector.radius;
-      } else if (connector.type === ConnectorType.Bottom) {
-        const center = this.vertex.width / 2;
-        connector.x = this.vertex.x + center;
-        connector.y = this.vertex.y + this.vertex.height;
-      } else if (connector.type === ConnectorType.Right) {
-        const center = this.vertex.height / 2;
-        connector.x = this.vertex.x + this.vertex.width;
-        connector.y = this.vertex.y + center;
-      }
-    } else {
-      if (connector.type === ConnectorType.Left) {
-        connector.x = this.vertex.x - this.vertex.radius;
-        connector.y = this.vertex.y;
-      } else if (connector.type === ConnectorType.Top) {
-        connector.x = this.vertex.x;
-        connector.y = this.vertex.y - this.vertex.radius;
-      } else if (connector.type === ConnectorType.Bottom) {
-        connector.x = this.vertex.x;
-        connector.y = this.vertex.y + this.vertex.radius;
-      } else if (connector.type === ConnectorType.Right) {
-        connector.x = this.vertex.x + this.vertex.radius;
-        connector.y = this.vertex.y;
-      }
-    }
+    this.model.x = x;
+    this.model.y = y;
   }
 }
