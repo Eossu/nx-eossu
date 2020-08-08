@@ -24,15 +24,15 @@ export class EdgeDrawingService {
     return this._drawing;
   }
 
-  renderLine(event: MouseEvent, connector?: IConnector): void {
+  drawLine(event: MouseEvent, connector?: IConnector): void {
     if (connector && !this._drawing) {
       this.startDrawing(event, connector);
     } else if (connector && this._drawing && this.checkConnector(connector)) {
       this._drawing = false;
       return;
-    }
+    } else if (this._drawing && event.button === 1) {}
 
-    this.drawLine(event);
+    this.draw(event);
   }
 
   cancleDrawing(): void {
@@ -63,7 +63,7 @@ export class EdgeDrawingService {
     }
   }
 
-  private drawLine(event: MouseEvent): void {
+  private draw(event: MouseEvent): void {
     const point = this._svgSvc.getSVGPoint(
       event,
       event.target as SVGSVGElement

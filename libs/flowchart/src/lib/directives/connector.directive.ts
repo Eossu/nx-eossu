@@ -13,48 +13,21 @@ export class ConnectorDirective implements OnInit, IDraggable {
   @Input() model: IConnector;
   @Input() vertex: IVertex;
 
-  private _startDrawing = false;
-
   get id(): string {
     return this.model.id;
   }
 
-  constructor(
-    private _svgSvc: SvgService,
-    private _edgeDrawSvc: EdgeDrawingService
-  ) {}
+  constructor() {}
 
   ngOnInit(): void {
     if (!this.model.color)
       this.model.color = colorLuminance(this.vertex.category.color, -0.3);
-    
+
     this.calculateConnectorPosition();
   }
 
   onDrag(event: MouseEvent): void {
     this.calculateConnectorPosition();
-  }
-
-  onMouseDown(): void {
-    if (!this._edgeDrawSvc.drawing) this._startDrawing = true;
-  }
-
-  onMouseUp(event: MouseEvent): void {
-    if (this._startDrawing || this._edgeDrawSvc.drawing) {
-      this._edgeDrawSvc.renderLine(event, this.model);
-      event.stopPropagation();
-    } 
-  }
-
-  onMouseLeave(): void {
-    this._startDrawing = false;
-  }
-
-  onMouseMove(event: MouseEvent): void {
-    if (this._startDrawing) {
-      this._edgeDrawSvc.renderLine(event, this.model);
-      event.stopPropagation();
-    }
   }
 
   private calculateConnectorPosition(): void {

@@ -24,7 +24,6 @@ import {
   IConnector,
 } from '../../flowchart.interfaces';
 
-import { SvgService } from '../../services/svg.service';
 import { LineStyle } from '../../flowchart.enums';
 import { SelectEvent } from '../../flowchart.events';
 import { VertexDirective } from '../../directives/vertex.directive';
@@ -48,7 +47,7 @@ const keyCodes = {
 export class WorkspaceComponent implements OnInit, OnDestroy {
   @Input() model: IWorkspaceModel;
   @Input() edgeStyle: LineStyle;
-  @Input() minimap: boolean;  // TODO: Not implemented yet so is not used at the moment.
+  @Input() minimap: boolean; // TODO: Not implemented yet so is not used at the moment.
   @Input() view: IView;
 
   @Output() removedItem = new EventEmitter<IVertex | IEdge>();
@@ -200,7 +199,27 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
    */
   @HostListener('click', ['$event'])
   onClick(event: MouseEvent) {
-    if (this._dragSvc.dragging) this._dragSvc.finishDrag(event);
+    const target = event.target as SVGSVGElement;
+    const type = target.parentElement.getAttribute('type');
+    const id = target.parentElement.getAttribute('id');
+
+    if (this._dragSvc.dragging) {
+      this._dragSvc.finishDrag(event);
+      event.stopPropagation();
+      return;
+    } else if (this._edgeDrawSvc.drawing && type === 'connector') {
+      const connector = this.connectors.find((con) => con.id === id);
+      this._edgeDrawSvc.drawLine(event, connector.model);
+      event.stopPropagation();
+      return;
+    } else if (this._edgeDrawSvc.drawing) {
+      this._edgeDrawSvc.cancleDrawing();
+    } else if (type === 'connector') {
+      const connector = this.connectors.find((con) => con.id === id);
+      this._edgeDrawSvc.drawLine(event, connector.model);
+      event.stopPropagation();
+      return;
+    }
 
     this.deselect();
     this._selections = [];
@@ -209,7 +228,6 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   @HostListener('mousedown', ['$event'])
   onMouseDown(event: MouseEvent): void {
     const target = event.target as SVGSVGElement;
-
     const type = target.parentElement.getAttribute('type');
     const id = target.parentElement.getAttribute('id');
 
@@ -225,24 +243,16 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     } else if (type === 'edge') {
       const edge = this.edges.find((edge) => edge.id === id);
       this._dragSvc.prepareDrag(event, [edge]);
-    } else if (type === 'connector') {
+    } else if (type === 'connector' && !this._edgeDrawSvc.drawing) {
       // If we are on a connector we will prepare for drawing an edge instead.
       const connector = this.connectors.find((con) => con.id === id);
+      this._edgeDrawSvc.drawLine(event, connector.model);
     }
   }
 
   @HostListener('mouseup', ['$event'])
   onMouseUp(event: MouseEvent): void {
     if (this._dragSvc.dragging) this._dragSvc.finishDrag(event);
-
-    if (this._edgeDrawSvc.drawing) {
-      this._edgeDrawSvc.renderLine(event);
-
-      // We should have selected above an connector. If not remove edge.
-      if (this._edgeDrawSvc.drawing) {
-        this._edgeDrawSvc.cancleDrawing();
-      }
-    }
   }
 
   @HostListener('mousemove', ['$event'])
@@ -252,7 +262,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     }
 
     if (this._edgeDrawSvc.drawing) {
-      this._edgeDrawSvc.renderLine(event);
+      this._edgeDrawSvc.drawLine(event);
       this.onMoving();
     }
   }
