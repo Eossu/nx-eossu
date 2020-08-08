@@ -8,6 +8,8 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 })
 export class TimelineComponent implements OnInit {
 
+  timeline: Array<string> = ['test', 'test2', 'test3'];
+
   constructor() { }
 
   ngOnInit(): void {
