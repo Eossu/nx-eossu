@@ -1,7 +1,9 @@
-<article class="timeline-item-card">
+<article>
   <header>
-    <ng-content select="timeline-item-dot"></ng-content>
-    <ng-content select="timeline-item-header"></ng-content>
+    <ng-content select="eossu-timeline-item-dot"></ng-content>
+    <ng-content select="eossu-timeline-item-header"></ng-content>
   </header>
-  <ng-content select="timeline-item-content"></ng-content>
+  <section>
+    <ng-content select="eossu-timeline-item-content"></ng-content>
+  </section>
 </article>

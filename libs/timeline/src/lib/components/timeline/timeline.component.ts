@@ -19,7 +19,6 @@ import { TimelineItemComponent } from '../timeline-item/timeline-item.component'
   templateUrl: './timeline.component.html',
   styleUrls: ['./timeline.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TimelineComponent implements OnInit, OnDestroy {
   @Input() alternate: boolean = false;
