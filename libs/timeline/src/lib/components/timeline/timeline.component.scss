@@ -1,7 +1,15 @@
-section {
-  width: 100%;
-
-  ul {
-    list-style-type: none;
+timeline {
+  position: relative;
+  display: block;
+  padding: 50px 0;
+  
+  timeline-line {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background-color: #000;
+    left: 50%;
+    width: 5px;
+    transform: translateX(-50%);
   }
 }
