@@ -6,12 +6,14 @@ import {
   IDraggable,
   ISelectable,
 } from '../flowchart.interfaces';
+
 import { colorLuminance } from '../utils/color.helpers';
 import { SvgService } from '../services/svg.service';
 import { LineStyle } from '../flowchart.enums';
 
 @Directive({
-  selector: '[eossuFcEdge]',
+  selector: '[eossu-fc-edge], [eossuFcEdge]',
+  host: { class: 'eossu-fc-edge' },
 })
 export class EdgeDirective implements OnInit, IDraggable, ISelectable {
   @Input() model: IEdge;

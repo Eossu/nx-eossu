@@ -13,6 +13,7 @@ import {
   QueryList,
   Output,
   EventEmitter,
+  ViewEncapsulation,
 } from '@angular/core';
 
 import {
@@ -23,15 +24,17 @@ import {
   IPoint2D,
   IConnector,
   ISelectable,
+  IDraggable,
 } from '../../flowchart.interfaces';
+
+import { v4 as uuid4 } from 'uuid';
 
 import { LineStyle } from '../../flowchart.enums';
 import { VertexDirective } from '../../directives/vertex.directive';
 import { EdgeDirective } from '../../directives/edge.directive';
-import { EdgeDrawingService } from '../../services/edge-drawing.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Subject, BehaviorSubject } from 'rxjs';
 import { ConnectorDirective } from '../../directives/connector.directive';
-import { DragService } from '../../services/drag.service';
+import { SvgService } from '../../services/svg.service';
 
 const keyCodes = {
   ESC: 27,
@@ -42,6 +45,7 @@ const keyCodes = {
   selector: 'eossu-fc-workspace',
   templateUrl: './workspace.component.html',
   styleUrls: ['./workspace.component.scss'],
+  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorkspaceComponent implements OnInit, OnDestroy {
@@ -63,13 +67,24 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
   @ViewChild('workspaceBoard') workspaceBoard: ElementRef<SVGSVGElement>;
 
+  // Selection variables
   private _selections = new Array<ISelectable>();
+
+  // Drag variables
+  private _dragging = false;
+  private _elementsDragged: Array<IDraggable>;
+
+  // Edge drawing variables
+  private _cancelSubject$ = new Subject<IEdge>();
+  private _newEdgeSubject$ = new BehaviorSubject<IEdge>(undefined);
+  private _drawing = false;
+  edgeDrawCancel$ = this._cancelSubject$.asObservable();
+  newEdgeCreated$ = this._newEdgeSubject$.asObservable();
+
+  // Holds all observable subscriptions to easly unsubscribe when destroyed.
   private _subscriptions = new Subscription();
 
-  constructor(
-    private _dragSvc: DragService,
-    private _edgeDrawSvc: EdgeDrawingService
-  ) {}
+  constructor(private _svgSvc: SvgService) {}
 
   ngOnInit(): void {
     if (!this.model) {
@@ -89,7 +104,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
 
     // Add Observable subscriptions for edge drawing.
     this._subscriptions.add(
-      this._edgeDrawSvc.newEdge$.subscribe((edge) => {
+      this.newEdgeCreated$.subscribe((edge) => {
         if (!edge) return;
 
         this.model = {
@@ -100,7 +115,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     );
 
     this._subscriptions.add(
-      this._edgeDrawSvc.cancle$.subscribe((edge) => {
+      this.edgeDrawCancel$.subscribe((edge) => {
         const idx = this.model.edges.indexOf(edge);
         this.model.edges.splice(idx, 1);
 
@@ -113,19 +128,101 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this._cancelSubject$.complete();
+    this._newEdgeSubject$.complete();
     this._subscriptions.unsubscribe();
   }
 
-  /**
-   * When a vertex is moving.
+  /*
+   * Dragging functionality
    */
-  onMoving(): void {
-    this.edges.forEach((directive) => {
-      const source: IPoint2D = this.getConnectorById(directive.model.source);
-      let dest: IPoint2D = this.getConnectorById(directive.model.destination);
-      if (!dest) dest = directive.model.endCord;
-      directive.render(source, dest, this.edgeStyle);
-    });
+
+  private prepareDrag(event: MouseEvent, elements: Array<IDraggable>): void {
+    this._elementsDragged = elements;
+    this._dragging = true;
+    this._elementsDragged.forEach((element) => element.onDragStart?.(event));
+  }
+
+  private finishDrag(event: MouseEvent): void {
+    this.onDrag(event);
+    this._dragging = false;
+    this._elementsDragged = undefined;
+  }
+
+  private onDrag(event: MouseEvent): void {
+    this._elementsDragged.forEach((element) => element.onDrag(event));
+  }
+
+  /*
+   * Edge drawing functionality
+   */
+
+  private drawLine(event: MouseEvent, connector?: IConnector): void {
+    if (connector && !this._drawing) {
+      this.startDrawing(event, connector);
+    } else if (connector && this._drawing && this.checkConnector(connector)) {
+      this._drawing = false;
+      return;
+    } else if (this._drawing && event.button === 1) {
+    }
+
+    this.edgeDraw(event);
+  }
+
+  private cancleDrawing(): void {
+    console.log('cancel drawing edge');
+    this._drawing = false;
+    this._cancelSubject$.next(this._newEdgeSubject$.getValue());
+  }
+
+  private startDrawing(event: MouseEvent, connector: IConnector): void {
+    const point = this._svgSvc.getSVGPoint(
+      event,
+      event.target as SVGSVGElement
+    );
+    const edge = {
+      id: uuid4(),
+      source: connector.id,
+      endCord: point,
+    };
+    this._newEdgeSubject$.next(edge);
+    this._drawing = true;
+  }
+
+  private checkConnector(connector: IConnector): boolean {
+    if (!connector) return false;
+    else if (connector.id === this._newEdgeSubject$.getValue().source)
+      return false;
+    else {
+      this._newEdgeSubject$.getValue().destination = connector.id;
+      return true;
+    }
+  }
+
+  private edgeDraw(event: MouseEvent): void {
+    const point = this._svgSvc.getSVGPoint(
+      event,
+      event.target as SVGSVGElement
+    );
+    this._newEdgeSubject$.getValue().endCord = point;
+    this.renderEdges([this._newEdgeSubject$.getValue().id]);
+  }
+
+  private renderEdges(id?: Array<string>): void {
+    if (id) {
+      const edge = this.edges.find((edge) => id.some((id) => edge.id));
+      const source: IPoint2D = this.getConnectorById(edge.model.source);
+      let dest: IPoint2D = this.getConnectorById(edge.model.destination);
+      if (!dest) dest = edge.model.endCord;
+      edge.render(source, dest, this.edgeStyle);
+    } else {
+      this.edges.forEach((edge) => {
+        const source: IPoint2D = this.getConnectorById(edge.model.source);
+        let dest: IPoint2D = this.getConnectorById(edge.model.destination);
+        if (!dest) dest = edge.model.endCord;
+        edge.render(source, dest, this.edgeStyle);
+      });
+    }
   }
 
   /**
@@ -178,16 +275,16 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
     const type = target.parentElement.getAttribute('type');
     const id = target.parentElement.getAttribute('id');
 
-    if (this._edgeDrawSvc.drawing && type === 'connector') {
+    if (this._drawing && type === 'connector') {
       const connector = this.connectors.find((con) => con.id === id);
-      this._edgeDrawSvc.drawLine(event, connector.model);
+      this.drawLine(event, connector.model);
       event.stopPropagation();
       return;
-    } else if (this._edgeDrawSvc.drawing) {
-      this._edgeDrawSvc.cancleDrawing();
+    } else if (this._drawing) {
+      this.cancleDrawing();
     } else if (type === 'connector') {
       const connector = this.connectors.find((con) => con.id === id);
-      this._edgeDrawSvc.drawLine(event, connector.model);
+      this.drawLine(event, connector.model);
       event.stopPropagation();
       return;
     } else if (type === 'vertex') {
@@ -231,38 +328,38 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
       const connectors = this.connectors.filter((connector) =>
         connectorsId.some((id) => id === connector.id)
       );
-      this._dragSvc.prepareDrag(event, [vertex, ...connectors]);
+      this.prepareDrag(event, [vertex, ...connectors]);
     } else if (type === 'edge') {
       const edge = this.edges.find((edge) => edge.id === id);
-      this._dragSvc.prepareDrag(event, [edge]);
-    } else if (type === 'connector' && !this._edgeDrawSvc.drawing) {
+      this.prepareDrag(event, [edge]);
+    } else if (type === 'connector' && !this._drawing) {
       // If we are on a connector we will prepare for drawing an edge instead.
       const connector = this.connectors.find((con) => con.id === id);
-      this._edgeDrawSvc.drawLine(event, connector.model);
+      this.drawLine(event, connector.model);
     }
   }
 
   @HostListener('mouseup', ['$event'])
   onMouseUp(event: MouseEvent): void {
-    if (this._dragSvc.dragging) this._dragSvc.finishDrag(event);
+    if (this._dragging) this.finishDrag(event);
   }
 
   @HostListener('mousemove', ['$event'])
   onMouseMove(event: MouseEvent): void {
-    if (this._dragSvc.dragging) {
-      this._dragSvc.onDrag(event);
+    if (this._dragging) {
+      this.onDrag(event);
+      this.renderEdges();
     }
 
-    if (this._edgeDrawSvc.drawing) {
-      this._edgeDrawSvc.drawLine(event);
-      this.onMoving();
+    if (this._drawing) {
+      this.drawLine(event);
     }
   }
 
   @HostListener('mouseleave', ['$event'])
   onMouseLeave(event: MouseEvent): void {
-    if (this._dragSvc.dragging) {
-      this._dragSvc.finishDrag(event);
+    if (this._dragging) {
+      this.finishDrag(event);
     }
   }
 
@@ -298,7 +395,7 @@ export class WorkspaceComponent implements OnInit, OnDestroy {
         });
       }
     } else if (event.keyCode === keyCodes.ESC) {
-      if (this._edgeDrawSvc.drawing) this._edgeDrawSvc.cancleDrawing();
+      if (this._drawing) this.cancleDrawing();
       else if (this._selections.length > 0) this.deselect();
     }
   }

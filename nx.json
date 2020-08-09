@@ -44,6 +44,13 @@
     "eossu-timeline-e2e": {
       "tags": [],
       "implicitDependencies": ["eossu-timeline"]
+    },
+    "eossu-flowchart": {
+      "tags": []
+    },
+    "eossu-flowchart-e2e": {
+      "tags": [],
+      "implicitDependencies": ["eossu-flowchart"]
     }
   }
 }

@@ -17,7 +17,8 @@ import { SvgService } from '../services/svg.service';
 import { colorLuminance } from '../utils/color.helpers';
 
 @Directive({
-  selector: '[eossuFcVertex]',
+  selector: '[eossu-fc-vertex], [eossuFcVertex]',
+  host: { class: 'eossu-fc-vertex' },
 })
 export class VertexDirective implements OnInit, IDraggable, ISelectable {
   @Input() model: IVertex;
@@ -37,7 +38,7 @@ export class VertexDirective implements OnInit, IDraggable, ISelectable {
 
   constructor(
     private _elementRef: ElementRef<SVGSVGElement>,
-    private _svgDragSvc: SvgService
+    private _svgSvc: SvgService
   ) {}
 
   /**
@@ -68,7 +69,7 @@ export class VertexDirective implements OnInit, IDraggable, ISelectable {
 
   /**
    * Prepare the element to be dragged.
-   * 
+   *
    * @param event MouseEvent
    */
   onDragStart(event: MouseEvent): void {
@@ -143,7 +144,7 @@ export class VertexDirective implements OnInit, IDraggable, ISelectable {
    * @param event MouseEvent
    */
   private calculateMouseOffset(event: MouseEvent): void {
-    this._offset = this._svgDragSvc.getSVGPoint(
+    this._offset = this._svgSvc.getSVGPoint(
       event,
       this._elementRef.nativeElement
     );
@@ -157,7 +158,7 @@ export class VertexDirective implements OnInit, IDraggable, ISelectable {
    * @param event MouseEvent
    */
   private calculateVertexPosition(event: MouseEvent): void {
-    const coord = this._svgDragSvc.getSVGPoint(
+    const coord = this._svgSvc.getSVGPoint(
       event,
       this._elementRef.nativeElement
     );

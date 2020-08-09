@@ -191,6 +191,129 @@
         }
       }
     },
+    "eossu-flowchart": {
+      "projectType": "application",
+      "schematics": {
+        "@nrwl/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "apps/eossu-flowchart",
+      "sourceRoot": "apps/eossu-flowchart/src",
+      "prefix": "eossu",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/eossu-flowchart",
+            "index": "apps/eossu-flowchart/src/index.html",
+            "main": "apps/eossu-flowchart/src/main.ts",
+            "polyfills": "apps/eossu-flowchart/src/polyfills.ts",
+            "tsConfig": "apps/eossu-flowchart/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "apps/eossu-flowchart/src/favicon.ico",
+              "apps/eossu-flowchart/src/assets"
+            ],
+            "styles": ["apps/eossu-flowchart/src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/eossu-flowchart/src/environments/environment.ts",
+                  "with": "apps/eossu-flowchart/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "eossu-flowchart:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "eossu-flowchart:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "eossu-flowchart:build"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/eossu-flowchart/tsconfig.app.json",
+              "apps/eossu-flowchart/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!apps/eossu-flowchart/**/*"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/eossu-flowchart/jest.config.js",
+            "tsConfig": "apps/eossu-flowchart/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "apps/eossu-flowchart/src/test-setup.ts"
+          }
+        }
+      }
+    },
+    "eossu-flowchart-e2e": {
+      "root": "apps/eossu-flowchart-e2e",
+      "sourceRoot": "apps/eossu-flowchart-e2e/src",
+      "projectType": "application",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/eossu-flowchart-e2e/cypress.json",
+            "tsConfig": "apps/eossu-flowchart-e2e/tsconfig.e2e.json",
+            "devServerTarget": "eossu-flowchart:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "eossu-flowchart:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["apps/eossu-flowchart-e2e/tsconfig.e2e.json"],
+            "exclude": ["**/node_modules/**", "!apps/eossu-flowchart-e2e/**/*"]
+          }
+        }
+      }
+    },
     "timeline": {
       "projectType": "library",
       "root": "libs/timeline",
