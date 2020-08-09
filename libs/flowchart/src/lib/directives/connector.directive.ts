@@ -1,13 +1,12 @@
-import { Directive, OnInit, Input, HostListener } from '@angular/core';
+import { Directive, OnInit, Input } from '@angular/core';
 
 import { IConnector, IVertex, IDraggable } from '../flowchart.interfaces';
-import { SvgService } from '../services/svg.service';
-import { EdgeDrawingService } from '../services/edge-drawing.service';
 import { colorLuminance } from '../utils/color.helpers';
 import { VertexType, ConnectorType } from '../flowchart.enums';
 
 @Directive({
-  selector: '[eossuFcConnector]',
+  selector: '[eossu-fc-connector], [eossuFcConnector]',
+  host: { class: 'eossu-fc-connector' },
 })
 export class ConnectorDirective implements OnInit, IDraggable {
   @Input() model: IConnector;
