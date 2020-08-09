@@ -568,6 +568,132 @@
           "style": "scss"
         }
       }
+    },
+    "eossu-ui-elements": {
+      "projectType": "application",
+      "schematics": {
+        "@nrwl/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "apps/eossu-ui-elements",
+      "sourceRoot": "apps/eossu-ui-elements/src",
+      "prefix": "eossu",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/eossu-ui-elements",
+            "index": "apps/eossu-ui-elements/src/index.html",
+            "main": "apps/eossu-ui-elements/src/main.ts",
+            "polyfills": "apps/eossu-ui-elements/src/polyfills.ts",
+            "tsConfig": "apps/eossu-ui-elements/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "apps/eossu-ui-elements/src/favicon.ico",
+              "apps/eossu-ui-elements/src/assets"
+            ],
+            "styles": ["apps/eossu-ui-elements/src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/eossu-ui-elements/src/environments/environment.ts",
+                  "with": "apps/eossu-ui-elements/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "eossu-ui-elements:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "eossu-ui-elements:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "eossu-ui-elements:build"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/eossu-ui-elements/tsconfig.app.json",
+              "apps/eossu-ui-elements/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!apps/eossu-ui-elements/**/*"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/eossu-ui-elements/jest.config.js",
+            "tsConfig": "apps/eossu-ui-elements/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "apps/eossu-ui-elements/src/test-setup.ts"
+          }
+        }
+      }
+    },
+    "eossu-ui-elements-e2e": {
+      "root": "apps/eossu-ui-elements-e2e",
+      "sourceRoot": "apps/eossu-ui-elements-e2e/src",
+      "projectType": "application",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/eossu-ui-elements-e2e/cypress.json",
+            "tsConfig": "apps/eossu-ui-elements-e2e/tsconfig.e2e.json",
+            "devServerTarget": "eossu-ui-elements:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "eossu-ui-elements:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["apps/eossu-ui-elements-e2e/tsconfig.e2e.json"],
+            "exclude": [
+              "**/node_modules/**",
+              "!apps/eossu-ui-elements-e2e/**/*"
+            ]
+          }
+        }
+      }
     }
   },
   "cli": {

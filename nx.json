@@ -57,6 +57,13 @@
     },
     "ui-button": {
       "tags": []
+    },
+    "eossu-ui-elements": {
+      "tags": []
+    },
+    "eossu-ui-elements-e2e": {
+      "tags": [],
+      "implicitDependencies": ["eossu-ui-elements"]
     }
   }
 }
