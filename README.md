@@ -19,7 +19,11 @@ This can be used to generete certain rule based tasks or other solutions where t
 
 ## UI
 
+Here are the collection of `User Interface` components in this library.
+
 ### Timeline
+
+Test application command: `nx s eossu-timeline`
 
 This is a ui component with diffrent directives to handle how the look are setup. This component has the possibility to
 be themed based on `angular material` theme.
