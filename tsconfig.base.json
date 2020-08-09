@@ -18,7 +18,9 @@
     "paths": {
       "@eossu/styles": ["libs/styles/src/index.ts"],
       "@eossu/flowchart": ["libs/flowchart/src/index.ts"],
-      "@eossu/ui/timeline": ["libs/timeline/src/index.ts"]
+      "@eossu/ui/timeline": ["libs/timeline/src/index.ts"],
+      "@eossu/ui/toolbar": ["libs/ui/toolbar/src/index.ts"],
+      "@eossu/ui/button": ["libs/ui/button/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

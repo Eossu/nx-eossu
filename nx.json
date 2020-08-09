@@ -51,6 +51,12 @@
     "eossu-flowchart-e2e": {
       "tags": [],
       "implicitDependencies": ["eossu-flowchart"]
+    },
+    "ui-toolbar": {
+      "tags": []
+    },
+    "ui-button": {
+      "tags": []
     }
   }
 }
