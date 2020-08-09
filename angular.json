@@ -190,6 +190,173 @@
           "style": "scss"
         }
       }
+    },
+    "timeline": {
+      "projectType": "library",
+      "root": "libs/timeline",
+      "sourceRoot": "libs/timeline/src",
+      "prefix": "eossu",
+      "architect": {
+        "build": {
+          "builder": "@nrwl/angular:package",
+          "options": {
+            "tsConfig": "libs/timeline/tsconfig.lib.json",
+            "project": "libs/timeline/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/timeline/tsconfig.lib.prod.json"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "libs/timeline/tsconfig.lib.json",
+              "libs/timeline/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/timeline/**/*"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/timeline/jest.config.js",
+            "tsConfig": "libs/timeline/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "libs/timeline/src/test-setup.ts"
+          }
+        }
+      },
+      "schematics": {
+        "@nrwl/angular:component": {
+          "style": "scss"
+        }
+      }
+    },
+    "eossu-timeline": {
+      "projectType": "application",
+      "schematics": {
+        "@nrwl/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "apps/eossu-timeline",
+      "sourceRoot": "apps/eossu-timeline/src",
+      "prefix": "eossu",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/eossu-timeline",
+            "index": "apps/eossu-timeline/src/index.html",
+            "main": "apps/eossu-timeline/src/main.ts",
+            "polyfills": "apps/eossu-timeline/src/polyfills.ts",
+            "tsConfig": "apps/eossu-timeline/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "apps/eossu-timeline/src/favicon.ico",
+              "apps/eossu-timeline/src/assets"
+            ],
+            "styles": ["apps/eossu-timeline/src/styles.scss"],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/eossu-timeline/src/environments/environment.ts",
+                  "with": "apps/eossu-timeline/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "eossu-timeline:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "eossu-timeline:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "eossu-timeline:build"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/eossu-timeline/tsconfig.app.json",
+              "apps/eossu-timeline/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!apps/eossu-timeline/**/*"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "apps/eossu-timeline/jest.config.js",
+            "tsConfig": "apps/eossu-timeline/tsconfig.spec.json",
+            "passWithNoTests": true,
+            "setupFile": "apps/eossu-timeline/src/test-setup.ts"
+          }
+        }
+      }
+    },
+    "eossu-timeline-e2e": {
+      "root": "apps/eossu-timeline-e2e",
+      "sourceRoot": "apps/eossu-timeline-e2e/src",
+      "projectType": "application",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/eossu-timeline-e2e/cypress.json",
+            "tsConfig": "apps/eossu-timeline-e2e/tsconfig.e2e.json",
+            "devServerTarget": "eossu-timeline:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "eossu-timeline:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": ["apps/eossu-timeline-e2e/tsconfig.e2e.json"],
+            "exclude": ["**/node_modules/**", "!apps/eossu-timeline-e2e/**/*"]
+          }
+        }
+      }
     }
   },
   "cli": {

@@ -12,15 +12,15 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$eossu-primary: mat-palette($mat-indigo);
-$eossu-accent: mat-palette($mat-pink, A200, A100, A400);
+$eossu-primary: mat-palette($mat-pink);
+$eossu-accent: mat-palette($mat-blue-grey, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
 $eossu-warn: mat-palette($mat-red);
 
 // Create the theme object. A theme consists of configurations for individual
 // theming systems such as "color" or "typography".
-$eossu-theme: mat-light-theme((
+$eossu-theme: mat-dark-theme((
   color: (
     primary: $eossu-primary,
     accent: $eossu-accent,
@@ -45,4 +45,4 @@ html, body {
 }
 
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; box-sizing: border-box;}

@@ -1,0 +1,25 @@
+@import '~@angular/material/theming';
+
+@mixin timeline-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+  $typographyConfig: mat-typography-config();
+
+  timeline {
+    font-family: mat-font-family($typographyConfig);
+
+    timeline-item {
+      timeline-item-card {
+        @include mat-elevation(4);
+        background-color: map-get($background, card) !important;
+        color: map-get($foreground, base);
+
+        timeline-item-header {
+          background-color: map-get($background, app-bar);
+        }
+      }
+    }
+  }
+}
