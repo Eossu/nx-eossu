@@ -9,13 +9,12 @@ $eossu-timeline-line-width: 2px !default;
 eossu-timeline {
   display: block;
   position: relative;
-  padding: $eossu-timeline-padding;
   color: #f3f3f3;
   margin: $eossu-timeline-padding;
+  margin-left: 65px;
   padding: 0;
   background-color: #171b1d;
-  margin-left: 65px;
-  animation: 0.2s ease-in 0s 1 load;
+  animation: .2s ease-in 0s 1 load;
 
   @keyframes load {
     0% {
@@ -64,7 +63,7 @@ eossu-timeline-item {
     border-radius: 50%;
     top: 0px;
     left: -21px;
-    background-color: #014758;
+    background-color: #171b1d;
     border: $eossu-timeline-line-width solid #067e7a;
   }
 
@@ -97,6 +96,7 @@ eossu-timeline-item {
   .eossu-timeline-title {
     font-size: 16px;
     font-weight: 800;
+    top: -5px
   }
 
   & > :last-child {
