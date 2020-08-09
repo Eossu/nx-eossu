@@ -15,6 +15,16 @@ eossu-timeline {
   padding: 0;
   background-color: #171b1d;
   margin-left: 65px;
+  animation: 0.2s ease-in 0s 1 load;
+
+  @keyframes load {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
 
   .eossu-timeline-line {
     position: absolute;
@@ -63,6 +73,8 @@ eossu-timeline-item {
   }
 }
 
+// Dot
+
 .eossu-timeline-dot {
   .eossu-timeline-time {
     position: absolute;
@@ -75,13 +87,24 @@ eossu-timeline-item {
   }
 }
 
+// Header
+
 .eossu-timeline-header {
-  display: block;
+  display: flex;
+  flex-direction: row;
+  height: $eossu-timeline-header-size;
+
+  .eossu-timeline-title {
+    font-size: 16px;
+    font-weight: 800;
+  }
 
   & > :last-child {
     margin-bottom: 0;
   }
 }
+
+// Content
 
 .eossu-timeline-content {
   display: block;
@@ -89,12 +112,4 @@ eossu-timeline-item {
   & > :last-child {
     margin-bottom: 0;
   }
-}
-
-// Header style
-
-.eossu-timeline-header {
-  display: flex;
-  flex-direction: row;
-  height: $eossu-timeline-header-size;
 }

@@ -1,10 +1,4 @@
-import {
-  Directive,
-  Input,
-  HostBinding,
-  ElementRef,
-  OnInit,
-} from '@angular/core';
+import { Directive, Input, ElementRef, OnInit } from '@angular/core';
 
 @Directive({
   selector: 'eossu-timeline-dot, [eossu-timeline-dot], [eossuTimelineDot]',
