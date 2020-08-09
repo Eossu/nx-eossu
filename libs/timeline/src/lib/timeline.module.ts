@@ -1,26 +1,33 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { FlexLayoutModule } from '@angular/flex-layout';
-
 import { TimelineComponent } from './components/timeline/timeline.component';
-import { TimelineItemComponent } from './components/timeline-item/timeline-item.component';
-import { TimelineItemHeaderComponent } from './components/timeline-item-header/timeline-item-header.component';
-import { TimelineItemContentComponent } from './components/timeline-item-content/timeline-item-content.component';
+import { TimelineHeaderDirective } from './directives/timeline-header.directive';
+import { TimelineContentDirective } from './directives/timeline-content.directive';
+import { TimelineDotDirective } from './directives/timeline-dot.directive';
+import { TimelineTitleDirective } from './directives/timeline-title.directive';
+import { TimelineTimeDirective } from './directives/timeline-time.directive';
+import { TimelineItemDirective } from './directives/timeline-item.directive';
 
 @NgModule({
-  imports: [CommonModule, FlexLayoutModule],
+  imports: [CommonModule],
   declarations: [
     TimelineComponent,
-    TimelineItemComponent,
-    TimelineItemHeaderComponent,
-    TimelineItemContentComponent,
+    TimelineItemDirective,
+    TimelineHeaderDirective,
+    TimelineContentDirective,
+    TimelineDotDirective,
+    TimelineTitleDirective,
+    TimelineTimeDirective,
   ],
   exports: [
     TimelineComponent,
-    TimelineItemComponent,
-    TimelineItemHeaderComponent,
-    TimelineItemContentComponent,
+    TimelineItemDirective,
+    TimelineHeaderDirective,
+    TimelineContentDirective,
+    TimelineDotDirective,
+    TimelineTitleDirective,
+    TimelineTimeDirective,
   ],
 })
 export class TimelineModule {}
