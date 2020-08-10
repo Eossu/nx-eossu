@@ -3,9 +3,11 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 
+import { UiToolbarModule } from '@eossu/ui/toolbar';
+
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule],
+  imports: [BrowserModule, UiToolbarModule],
   providers: [],
   bootstrap: [AppComponent],
 })

@@ -25,3 +25,10 @@ Test application command: `nx s eossu-timeline`.
 
 This is a ui component with diffrent directives to handle how the look are setup. This component has the possibility to
 be themed based on `angular material` theme.
+
+### Toolbar
+
+Test application command: `nx s eossu-ui-elements`
+
+This is a ui component to create a toolbar. This is normaly at the top of the page streathicng over and beeing sticky so
+that its not hidden when scrolling.
