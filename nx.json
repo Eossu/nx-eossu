@@ -64,6 +64,9 @@
     "eossu-ui-elements-e2e": {
       "tags": [],
       "implicitDependencies": ["eossu-ui-elements"]
+    },
+    "ui-loaders": {
+      "tags": []
     }
   }
 }
