@@ -3,15 +3,24 @@ $eossu-loader-tower-colors: #1e254b, #4b2f65, #82346a, #bd3b70, #ef4275;
 $eossu-loader-tower-animation-delay: -700ms, -600ms, -500ms, -400ms, -300ms, -200ms;
 
 section {
-  position: absolute;
+  position: relative;
   padding: $eossu-loader-tower-padding;
-  width: 55px;
   display: flex;
+  opacity: 1;
+  animation: .2s ease-in-out 0s 1 load;
+
+  @keyframes load {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
 
   span {
     width: 10px;
     height: 40px;
-    background: white;
     margin: 0 1px;
     animation: loading 800ms ease-in-out infinite;
   }
