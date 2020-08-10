@@ -4,7 +4,6 @@ $eossu-loader-tower-animation-delay: -700ms, -600ms, -500ms, -400ms, -300ms, -20
 
 section {
   position: relative;
-  padding: $eossu-loader-tower-padding;
   display: flex;
   opacity: 1;
   animation: .2s ease-in-out 0s 1 load;
