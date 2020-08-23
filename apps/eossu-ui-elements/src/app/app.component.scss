@@ -1,0 +1,23 @@
+
+$toolbar-size: 64px;
+
+main {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: calc(100vh - $toolbar-size);
+
+  h1 {
+    color: #ef4275;
+    margin: 16px 0;
+  }
+
+  section {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+  }
+}

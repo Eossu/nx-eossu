@@ -1,0 +1,43 @@
+$eossu-loader-tower-padding: 16px !default;
+$eossu-loader-tower-colors: #1e254b, #4b2f65, #82346a, #bd3b70, #ef4275;
+$eossu-loader-tower-animation-delay: -700ms, -600ms, -500ms, -400ms, -300ms, -200ms;
+
+section {
+  position: relative;
+  padding: $eossu-loader-tower-padding;
+  display: flex;
+  opacity: 1;
+  animation: .2s ease-in-out 0s 1 load;
+
+  @keyframes load {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  span {
+    width: 10px;
+    height: 40px;
+    margin: 0 1px;
+    animation: loading 800ms ease-in-out infinite;
+  }
+
+  @for $i from 1 through 5 {
+    span:nth-child(#{$i}) {
+      background: nth($eossu-loader-tower-colors, $i);
+      animation-delay: nth($eossu-loader-tower-animation-delay, $i);
+    }
+  }
+
+  @keyframes loading {
+      0%,60%,100% {
+          transform: scaleY(.05);
+      }
+      35% {
+          transform: scale(1);
+      }
+  }
+}
