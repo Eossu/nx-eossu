@@ -1,0 +1,16 @@
+$eossu-toolbar-height: 64px !default;
+$eossu-toolbar-padding: 16px !default;
+
+eossu-toolbar {
+  display: flex;
+  position: sticky;
+  top: 0px;
+  padding: 0 $eossu-toolbar-padding;
+  width: 100%;
+  height: $eossu-toolbar-height;
+  background-color: #000;
+  box-sizing: border-box;
+  flex-direction: row;
+  align-items: center;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
+}
